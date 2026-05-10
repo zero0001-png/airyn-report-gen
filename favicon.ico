@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- Note page -->
+  <rect x="14" y="10" width="36" height="44" rx="6" fill="#ffffff" stroke="#333" stroke-width="2"></rect>
+  
+  <!-- Lines -->
+  <line x1="20" y1="22" x2="44" y2="22" stroke="#999" stroke-width="2"></line>
+  <line x1="20" y1="30" x2="44" y2="30" stroke="#999" stroke-width="2"></line>
+  <line x1="20" y1="38" x2="38" y2="38" stroke="#999" stroke-width="2"></line>
+  
+  <!-- Lightning bolt (AI/generation) -->
+  <path d="M36 18 L28 34 H34 L30 48 L44 28 H36 Z" fill="#4f46e5"></path>
+</svg>
