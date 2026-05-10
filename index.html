@@ -842,7 +842,8 @@ else if (Array.isArray(topIntents)) {
 else {
   lines.push('N/A');
 }
-      lines.push(' ');
+
+lines.push(' ');
 lines.push('WOCAS:');
 
 // 1. Get raw input and clean it
@@ -863,7 +864,7 @@ if (rawWocas.length === 0) {
 
 return lines.join('\n');
     }
-
+	  
     // Validate numeric fields (allow empty)
     function validateNumeric(ids) {
       for (const id of ids) {
