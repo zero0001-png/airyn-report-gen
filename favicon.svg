@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
   <!-- Note page -->
-  <rect x="14" y="10" width="36" height="44" rx="6" fill="#ffffff" stroke="#333" stroke-width="2"></rect>
+  <rect x="14" y="10" width="40" height="48" rx="6" fill="#ffffff" stroke="#333" stroke-width="2"></rect>
   
   <!-- Lines -->
   <line x1="20" y1="22" x2="44" y2="22" stroke="#999" stroke-width="2"></line>
