@@ -555,31 +555,41 @@ const intentMap = {
 "double charge": "BILLING INQUIRY",
 "refund": "BILLING INQUIRY",
 "payment failed": "BILLING INQUIRY",
-"receipt": "BILLING INQUIRY"
+"receipt": "BILLING INQUIRY",
+"rebate": "BILLING INQUIRY",
+"dispute": "BILLING INQUIRY",
+"nagbayad": "BILLING INQUIRY",
+"bayad na": "BILLING INQUIRY",
+"paid na": "BILLING INQUIRY",
+"no service after payment": "BILLING INQUIRY"
 
 };
 
+  function getTopOverallIntents(batchInput) {
 
-function getTopOverallIntents(batchInput) {
+    const text = batchInput.toLowerCase().trim();
+    const lines = text.split("\n");
 
-  const text = batchInput.toLowerCase();
-  const lines = text.split("\n");
-
-  const counts = {};
-
-  lines.forEach(line => {
-    for (const key in intentMap) {
-      if (line.includes(key)) {
-        const intent = intentMap[key];
-        counts[intent] = (counts[intent] || 0) + 1;
+    const scores = {};
+    lines.forEach(line => {
+      let matchedIntent = null;
+      // 🔥 ONLY ONE INTENT PER LINE
+      for (const key in intentMap) {
+        if (line.includes(key)) {
+          matchedIntent = intentMap[key];
+          break; // stop after first match
+        }
       }
-    }
-  });
-  const sorted = Object.entries(counts)
-    .sort((a, b) => b[1] - a[1]);
-
-  return sorted.slice(0, 2).map(entry => entry[0]);
-}
+      if (matchedIntent) {
+        scores[matchedIntent] = (scores[matchedIntent] || 0) + 1;
+      }
+    });
+    // sort results
+    const sorted = Object.entries(scores)
+      .sort((a, b) => b[1] - a[1]);
+    // return TOP 2 intents
+    return sorted.slice(0, 2).map(e => e[0]);
+  }
 
 document.getElementById("wocasX")?.addEventListener("input", function () {
   const topIntents = getTopOverallIntents(this.value);
