@@ -405,20 +405,22 @@ const intentMap = {
 "hindi gumagana internet": "REPAIR",
 "walang net": "REPAIR",
 "walang wifi": "REPAIR",
-"putol putol": "REPAIR",
-"mahina signal": "REPAIR",
+"putol": "REPAIR",
+"mahina": "REPAIR",
 "napakabagal": "REPAIR",
 "hindi makaconnect": "REPAIR",
 "laging offline": "REPAIR",
 "no connection": "REPAIR",
 "intermittent": "REPAIR",
 "unstable": "REPAIR",
-"buffering": "REPAIR",
+"buffer": "REPAIR",
 "lag": "REPAIR",
 "high ping": "REPAIR",
 "slow internet": "REPAIR",
 "router issue": "REPAIR",
 "modem": "REPAIR",
+"loading": "REPAIR",
+"ping": "REPAIR",
 "bagal": "REPAIR",
 
 
@@ -441,7 +443,7 @@ const intentMap = {
 "pa install": "AFTERSALES INQUIRY",
 "recontract": "AFTERSALES INQUIRY",
 "request transfer": "AFTERSALES INQUIRY",
-"installation request": "AFTERSALES INQUIRY",
+"installation": "AFTERSALES INQUIRY",
 "new connection": "AFTERSALES INQUIRY",
 
 
@@ -460,7 +462,7 @@ const intentMap = {
 "walang sumasagot": "CUSTOMER SERVICE",
 "hindi sumasagot": "CUSTOMER SERVICE",
 "hindi makausap": "CUSTOMER SERVICE",
-"paki assist": "CUSTOMER SERVICE",
+"assist": "CUSTOMER SERVICE",
 "paki tulong": "CUSTOMER SERVICE",
 "pa help": "CUSTOMER SERVICE",
 "wala pa update": "CUSTOMER SERVICE",
@@ -472,7 +474,7 @@ const intentMap = {
 "angry": "BRAND HATE",
 "frustrated": "BRAND HATE",
 "useless": "BRAND HATE",
-"scam": "BRAND HATE",
+"basura": "BRAND HATE",
 "worst": "BRAND HATE",
 "disappointed": "BRAND HATE",
 "poor service": "BRAND HATE",
@@ -496,6 +498,8 @@ const intentMap = {
 "trash": "BRAND HATE",
 "annoying": "BRAND HATE",
 "waste": "BRAND HATE",
+"tangina": "BRAND HATE",
+"pldc": "BRAND HATE",
 "ripoff": "BRAND HATE",
 
 
@@ -513,6 +517,9 @@ const intentMap = {
 "murang plan": "PRODUCTS AND PROMOS",
 "limited offer": "PRODUCTS AND PROMOS",
 "speed boost": "PRODUCTS AND PROMOS",
+"netflix": "PRODUCTS AND PROMOS",
+"hbo": "PRODUCTS AND PROMOS",
+"cignal": "PRODUCTS AND PROMOS",
 "fiber upgrade promo": "PRODUCTS AND PROMOS",
 
 
@@ -528,9 +535,11 @@ const intentMap = {
 "matagal technician": "PERSONNEL COMPLAINTS",
 "hindi dumating": "PERSONNEL COMPLAINTS",
 "late installer": "PERSONNEL COMPLAINTS",
-"masungit agent": "PERSONNEL COMPLAINTS",
+"masungit": "PERSONNEL COMPLAINTS",
 "rude technician": "PERSONNEL COMPLAINTS",
 "walang update installer": "PERSONNEL COMPLAINTS",
+"nagpabayad": "PERSONNEL COMPLAINTS",
+"nanghingi": "PERSONNEL COMPLAINTS",
 
 
 // BILLING INQUIRY
@@ -559,8 +568,12 @@ const intentMap = {
 "rebate": "BILLING INQUIRY",
 "dispute": "BILLING INQUIRY",
 "nagbayad": "BILLING INQUIRY",
-"bayad na": "BILLING INQUIRY",
-"paid na": "BILLING INQUIRY",
+"bayad": "BILLING INQUIRY",
+"paid": "BILLING INQUIRY",
+"pay": "BILLING INQUIRY",
+"paying": "BILLING INQUIRY",
+"fraud": "BILLING INQUIRY",
+"scam": "BILLING INQUIRY",
 "no service after payment": "BILLING INQUIRY"
 
 };
@@ -785,24 +798,50 @@ if (agentName === 'Airyn X') {
       lines.push(` • Approved by Agent - ${selected.approvedAgent}`);
       lines.push(` • Auto sent by Airyn - ${selected.autoSent}`);
       lines.push(' ');
+		
 lines.push('TOP INTENTS');
-if (typeof topIntents === 'string') {
-  topIntents.split('\n').forEach(intent => {
-    const cleanIntent = intent.trim().replace(/^-\s*/, ''); 
-    if (cleanIntent) {
-      lines.push(`• ${cleanIntent}`);
-    }
-  });
-} else if (Array.isArray(topIntents)) {
-  topIntents.forEach(intent => {
-    const cleanIntent = intent.trim().replace(/^-\s*/, '');
-    if (cleanIntent) {
-      lines.push(`• ${cleanIntent}`);
-    }
-  });
-} else {
-  lines.push('-'); // fallback if no data
+if (
+  !topIntents ||
+  (Array.isArray(topIntents) && topIntents.length === 0) ||
+  (typeof topIntents === 'string' && !topIntents.trim())
+) {
+  lines.push(' • N/A');
+} 
+else if (typeof topIntents === 'string') {
+
+  const cleaned = topIntents
+    .split('\n')
+    .map(i => i.trim().replace(/^-\s*/, ''))
+    .filter(Boolean);
+
+  if (cleaned.length === 0) {
+    lines.push('N/A');
+  } else {
+    cleaned.forEach(intent => {
+      lines.push(`• ${intent}`);
+    });
+  }
+
+} 
+else if (Array.isArray(topIntents)) {
+
+  const cleaned = topIntents
+    .map(i => (i || '').trim().replace(/^-\s*/, ''))
+    .filter(Boolean);
+
+  if (cleaned.length === 0) {
+    lines.push('N/A');
+  } else {
+    cleaned.forEach(intent => {
+      lines.push(`• ${intent}`);
+    });
+  }
+
+} 
+else {
+  lines.push('N/A');
 }
+
       lines.push(' ');
 lines.push('WOCAS:');
 
