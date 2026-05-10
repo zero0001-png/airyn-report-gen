@@ -159,6 +159,12 @@
 #copyFindingsBtn:hover { background: var(--accent); }
 
 
+<script type="module">
+  // We use the CDN link to load the library
+  import * as webllm from "https://esm.run/@mlc-ai/web-llm";
+  window.webllm = webllm;
+</script>
+
   </style>
 </head>
 <body>
@@ -235,8 +241,11 @@
           <div class="col"><label>Auto sent by Airyn</label><input id="autoSentX" type="number" placeholder="0" value="" /></div>
         </div>
 
-        <div class="section-title">Top Intents</div>
-        <textarea id="topIntentsX" placeholder="TOP INTENTS"></textarea>
+        <div class="section-title" style="display:flex; justify-content:space-between; align-items:center;">
+  <span>Top Intents:</span>
+  <button id="aiAnalyzeFB" class="btn small" style="background:#57b86a;" type="button">✨ Auto-Analyze</button>
+</div>
+<textarea id="topIntentsFB" placeholder="AI will extract intents from WOCAS..."></textarea>
 
         <div class="section-title">WOCAS</div>
         <div class="inline-row" style="margin-bottom:8px;">
@@ -1026,6 +1035,53 @@ SAMPLE WOCAS:
       syncSummary('X');
       syncSummary('FB');
     });
+// AI MODEL
+let engine = null;
+
+async function analyzeWocasIntent(wocasId, targetId) {
+    const wocasInput = document.getElementById(wocasId).value.trim();
+    const targetBox = document.getElementById(targetId);
+
+    if (!wocasInput) {
+        alert("Please paste the WOCAS first!");
+        return;
+    }
+
+    // Check if the browser even supports WebGPU
+    if (!navigator.gpu) {
+        targetBox.value = "Error: Your browser doesn't support WebGPU. Try updating Chrome.";
+        return;
+    }
+
+    try {
+        if (!engine) {
+            targetBox.value = "Downloading AI Model... (Please wait) ⏳";
+            
+            // We use 'TinyLlama-1.1B-Chat-v1.0-q4f16_1-MLC' because it's only ~600MB
+            engine = await window.webllm.CreateMLCEngine("TinyLlama-1.1B-Chat-v1.0-q4f16_1-MLC", {
+                initProgressCallback: (report) => {
+                    targetBox.value = `Loading: ${Math.round(report.progress * 100)}% - ${report.text}`;
+                }
+            });
+        }
+
+        targetBox.value = "Analyzing intents... 🧠";
+
+        const messages = [
+            { role: "system", content: "You are a helpful assistant. Extract the top 3 customer intents from the provided text. Keep it short (max 5 words each). Format as a simple list." },
+            { role: "user", content: wocasInput }
+        ];
+
+        const reply = await engine.chat.completions.create({ messages });
+        targetBox.value = reply.choices[0].message.content.trim();
+
+    } catch (error) {
+        console.error("WebLLM Error:", error);
+        targetBox.value = "WebLLM Error: " + error.message;
+    }
+}
+
+	  
   </script>
 </body>
 </html>
