@@ -1032,31 +1032,28 @@ SAMPLE WOCAS:
       syncSummary('FB');
     });
 // AI MODEL
-const GEMINI_API_KEY = 'AIzaSyCHZ_5v2a5huJScKqNPNnDMQDiPK20r2ZA';
+// Paste this into your <script> area
+const API_KEY = 'AIzaSyCHZ_5v2a5huJScKqNPNnDMQDiPK20r2ZA'; // Get yours at aistudio.google.com
 
-async function analyzeWocasIntent(wocasId, targetId) {
-    const wocasText = document.getElementById(wocasId).value.trim();
-    const targetField = document.getElementById(targetId);
+async function analyzeWocasIntent(sourceId, targetId) {
+    const wocasInput = document.getElementById(sourceId).value.trim();
+    const targetBox = document.getElementById(targetId);
 
-    if (!wocasText) {
-        alert("Please enter some WOCAS data first!");
+    if (!wocasInput) {
+        alert("Please paste the WOCAS first!");
         return;
     }
 
-    const originalPlaceholder = targetField.placeholder;
-    targetField.value = "";
-    targetField.placeholder = "🤖 Analyzing intents... please wait...";
+    targetBox.value = "Analyzing data... 🤖";
 
-    // This prompt ensures the AI gives you exactly what your report needs
-    const prompt = `Analyze these customer comments (WOCAS) and extract the top 3-5 unique intents. 
-    Format them as a simple list with no bullet symbols or numbers, one per line. 
-    Keep each intent short (3-6 words).
-    
-    Comments:
-    ${wocasText}`;
+    // This tells the AI exactly what to do with your Tagalog/English feedback
+    const prompt = `You are a social media analyst. Summarize the following customer feedback into the top 3 core intents. 
+    Use a simple list format without bullets. 
+    Keep each intent under 5 words. 
+    Feedback: ${wocasInput}`;
 
     try {
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEY}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -1065,22 +1062,19 @@ async function analyzeWocasIntent(wocasId, targetId) {
         });
 
         const data = await response.json();
-        const result = data.candidates[0].content.parts[0].text;
+        const aiText = data.candidates[0].content.parts[0].text;
         
-        targetField.value = result.trim();
-        targetField.placeholder = originalPlaceholder;
-
+        // Clean up the text and put it in the box
+        targetBox.value = aiText.trim();
     } catch (error) {
         console.error("AI Error:", error);
-        alert("Failed to connect to AI. Check your API key or internet connection.");
-        targetField.placeholder = "Error analyzing. Try again.";
+        targetBox.value = "Analysis failed. Please check your API key or connection.";
     }
 }
 
-// Attach the listeners to your new buttons
-document.getElementById('aiAnalyzeX').addEventListener('click', () => analyzeWocasIntent('wocasX', 'topIntentsX'));
-document.getElementById('aiAnalyzeFB').addEventListener('click', () => analyzeWocasIntent('wocasFB', 'topIntentsFB'));
-
+// Hook it up to your buttons
+document.getElementById('aiAnalyzeX').onclick = () => analyzeWocasIntent('wocasX', 'topIntentsX');
+document.getElementById('aiAnalyzeFB').onclick = () => analyzeWocasIntent('wocasFB', 'topIntentsFB');
 	  
   </script>
 </body>
