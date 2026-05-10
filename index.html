@@ -384,7 +384,7 @@
   </div>
 
 <script>
-  const intentMap = {
+const intentMap = {
 // REPAIR
 "internet": "REPAIR",
 "walang internet": "REPAIR",
@@ -421,7 +421,8 @@
 "modem": "REPAIR",
 "bagal": "REPAIR",
 
-    // AFTERSALES INQUIRY
+
+// AFTERSALES INQUIRY
 "downgrade": "AFTERSALES INQUIRY",
 "upgrade": "AFTERSALES INQUIRY",
 "plan change": "AFTERSALES INQUIRY",
@@ -443,7 +444,8 @@
 "installation request": "AFTERSALES INQUIRY",
 "new connection": "AFTERSALES INQUIRY",
 
-    // CUSTOMER SERVICE
+
+// CUSTOMER SERVICE
 "customer service": "CUSTOMER SERVICE",
 "support": "CUSTOMER SERVICE",
 "help": "CUSTOMER SERVICE",
@@ -464,7 +466,8 @@
 "wala pa update": "CUSTOMER SERVICE",
 "hindi nagrereply": "CUSTOMER SERVICE",
 
-    // BRAND HATE
+
+// BRAND HATE
 "hate": "BRAND HATE",
 "angry": "BRAND HATE",
 "frustrated": "BRAND HATE",
@@ -495,7 +498,8 @@
 "waste": "BRAND HATE",
 "ripoff": "BRAND HATE",
 
-    // PRODUCTS AND PROMOS
+
+// PRODUCTS AND PROMOS
 "promo": "PRODUCTS AND PROMOS",
 "discount": "PRODUCTS AND PROMOS",
 "offer": "PRODUCTS AND PROMOS",
@@ -511,7 +515,8 @@
 "speed boost": "PRODUCTS AND PROMOS",
 "fiber upgrade promo": "PRODUCTS AND PROMOS",
 
-    // PERSONNEL COMPLAINTS
+
+// PERSONNEL COMPLAINTS
 "complaint": "PERSONNEL COMPLAINTS",
 "staff": "PERSONNEL COMPLAINTS",
 "employee": "PERSONNEL COMPLAINTS",
@@ -527,7 +532,8 @@
 "rude technician": "PERSONNEL COMPLAINTS",
 "walang update installer": "PERSONNEL COMPLAINTS",
 
-    // BILLING INQUIRY
+
+// BILLING INQUIRY
 "bill": "BILLING INQUIRY",
 "billing": "BILLING INQUIRY",
 "payment": "BILLING INQUIRY",
@@ -549,48 +555,55 @@
 "double charge": "BILLING INQUIRY",
 "refund": "BILLING INQUIRY",
 "payment failed": "BILLING INQUIRY",
-"receipt": "BILLING INQUIRY",
-  };
+"receipt": "BILLING INQUIRY"
+
+};
 
 
-  function getTopOverallIntents(batchInput) {
-    const lines = batchInput.toLowerCase().split("\n");
-    const counts = {};
+function getTopOverallIntents(batchInput) {
 
-    lines.forEach(line => {
-      for (const key in intentMap) {
-        if (line.includes(key)) {
-          const intent = intentMap[key];
-          counts[intent] = (counts[intent] || 0) + 1;
-        }
+  const text = batchInput.toLowerCase();
+  const lines = text.split("\n");
+
+  const counts = {};
+
+  lines.forEach(line => {
+    for (const key in intentMap) {
+      if (line.includes(key)) {
+        const intent = intentMap[key];
+        counts[intent] = (counts[intent] || 0) + 1;
       }
-    });
-
-    const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-    return sorted.slice(0, 2).map(entry => entry[0]);
-  }
-
-  document.getElementById("wocasX").addEventListener("input", function() {
-    const topIntents = getTopOverallIntents(this.value);
-    document.getElementById("topIntentsX").value = topIntents.join("\n");
+    }
   });
+  const sorted = Object.entries(counts)
+    .sort((a, b) => b[1] - a[1]);
 
-  document.getElementById("clearWocasX").addEventListener("click", function() {
-    document.getElementById("wocasX").value = "";
-    document.getElementById("topIntentsX").value = "";
-  });
+  return sorted.slice(0, 2).map(entry => entry[0]);
+}
 
-  document.getElementById("wocasFB").addEventListener("input", function() {
-    const topIntents = getTopOverallIntents(this.value);
-    document.getElementById("topIntentsFB").value = topIntents.join("\n");
-  });
+document.getElementById("wocasX")?.addEventListener("input", function () {
+  const topIntents = getTopOverallIntents(this.value);
+  document.getElementById("topIntentsX").value =
+    topIntents.length ? topIntents.join("\n") : "";
+});
+	
+document.getElementById("clearWocasX")?.addEventListener("click", function () {
+  document.getElementById("wocasX").value = "";
+  document.getElementById("topIntentsX").value = "";
+});
+	
+document.getElementById("wocasFB")?.addEventListener("input", function () {
+  const topIntents = getTopOverallIntents(this.value);
+  document.getElementById("topIntentsFB").value =
+    topIntents.length ? topIntents.join("\n") : "";
+});
 
-  document.getElementById("clearWocasFB").addEventListener("click", function() {
-    document.getElementById("wocasFB").value = "";
-    document.getElementById("topIntentsFB").value = "";
-  });
+document.getElementById("clearWocasFB")?.addEventListener("click", function () {
+  document.getElementById("wocasFB").value = "";
+  document.getElementById("topIntentsFB").value = "";
+});
+
 </script>
-
 
 <script>
 
