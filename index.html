@@ -1036,50 +1036,55 @@ SAMPLE WOCAS:
       syncSummary('FB');
     });
 // AI MODEL
-let engine = null;
+<script type="module">
+  // 2. Import MUST be the very first line inside the script
+  import * as webllm from "https://esm.run/@mlc-ai/web-llm";
 
-async function analyzeWocasIntent(wocasId, targetId) {
-    const wocasInput = document.getElementById(wocasId).value.trim();
-    const targetBox = document.getElementById(targetId);
+  let engine = null;
 
-    if (!wocasInput) {
-        alert("Please paste the WOCAS first!");
-        return;
-    }
-
-    // Check if the browser even supports WebGPU
-    if (!navigator.gpu) {
-        targetBox.value = "Error: Your browser doesn't support WebGPU. Try updating Chrome.";
-        return;
+  async function runAIAnalysis(sourceId, targetId) {
+    const wocasContent = document.getElementById(sourceId).value;
+    const targetField = document.getElementById(targetId);
+    
+    if (!wocasContent) {
+      alert("Please paste WOCAS data first!");
+      return;
     }
 
     try {
-        if (!engine) {
-            targetBox.value = "Downloading AI Model... (Please wait) ⏳";
-            
-            // We use 'TinyLlama-1.1B-Chat-v1.0-q4f16_1-MLC' because it's only ~600MB
-            engine = await window.webllm.CreateMLCEngine("TinyLlama-1.1B-Chat-v1.0-q4f16_1-MLC", {
-                initProgressCallback: (report) => {
-                    targetBox.value = `Loading: ${Math.round(report.progress * 100)}% - ${report.text}`;
-                }
-            });
-        }
+      if (!engine) {
+        targetField.value = "";
+        targetField.placeholder = "Loading AI Engine... ⏳";
+        
+        // Using TinyLlama for stability on your hardware
+        engine = await webllm.CreateMLCEngine("TinyLlama-1.1B-Chat-v1.0-q4f16_1-MLC", {
+          initProgressCallback: (report) => {
+            targetField.placeholder = `Loading: ${Math.round(report.progress * 100)}%`;
+          }
+        });
+      }
 
-        targetBox.value = "Analyzing intents... 🧠";
+      targetField.value = "";
+      targetField.placeholder = "Analyzing intents... 🧠";
 
-        const messages = [
-            { role: "system", content: "You are a helpful assistant. Extract the top 3 customer intents from the provided text. Keep it short (max 5 words each). Format as a simple list." },
-            { role: "user", content: wocasInput }
-        ];
+      const messages = [
+        { role: "system", content: "Extract the top 3 customer intents. 5 words max each. Simple list." },
+        { role: "user", content: wocasContent }
+      ];
 
-        const reply = await engine.chat.completions.create({ messages });
-        targetBox.value = reply.choices[0].message.content.trim();
-
+      const reply = await engine.chat.completions.create({ messages });
+      targetField.value = reply.choices[0].message.content.trim();
+      
     } catch (error) {
-        console.error("WebLLM Error:", error);
-        targetBox.value = "WebLLM Error: " + error.message;
+      console.error("AI Analysis failed:", error);
+      targetField.placeholder = "Analysis failed. Ensure you use HTTPS.";
     }
-}
+  }
+
+  // 3. Attach the logic to your "Auto-Analyze" buttons
+  document.getElementById('aiAnalyzeX').onclick = () => runAIAnalysis('wocasX', 'topIntentsX');
+  document.getElementById('aiAnalyzeFB').onclick = () => runAIAnalysis('wocasFB', 'topIntentsFB');
+</script>
 
 	  
   </script>
