@@ -158,7 +158,8 @@
 #copyTemplateBtn:hover { background: var(--accent); }
 #copyFindingsBtn { padding: 6px 12px; font-size: 13px; cursor: pointer; float: right; background: #d5d5d5; color: #000; border:2px solid; border-color: #000; }
 #copyFindingsBtn:hover { background: var(--accent); }
-
+#copyEscalationBtn { padding: 6px 12px; font-size: 13px; cursor: pointer; float: right; background: #d5d5d5; color: #000; border:2px solid; border-color: #000; }
+#copyEscalationBtn:hover { background: var(--accent); }
 
   </style>
 </head>
@@ -187,12 +188,16 @@
   </div>
 </div>
 
-
-        <label>Date (auto-update at 12:05 AM)</label>
-        <input id="dateX" type="date" value="2026-02-17" />
-
-        <label style="margin-top:10px">Time Range (auto-update between x:10 to x:59 minutes)</label>
-        <input id="timeX" type="text" value="0:00 PM to 0:00 PM" />
+<div style="display: flex; gap: 15px; align-items: flex-end;">
+    <div style="display: flex; flex-direction: column; flex: 1;">
+        <label style="font-size: 14px; margin-bottom: 5px;">Date (auto-update)</label>
+        <input id="dateX" type="date" value="2026-02-17" style="padding: 8px; border-radius: 8px; border: 1px solid #ccc;" />
+    </div>
+    <div style="display: flex; flex-direction: column; flex: 1;">
+        <label style="font-size: 14px; margin-bottom: 5px;">Time Range (auto-update)</label>
+        <input id="timeX" type="text" value="0:00 PM to 0:00 PM" style="padding: 8px; border-radius: 8px; border: 1px solid #ccc;" />
+    </div>
+</div>
 
         <div class="section-title">Summary</div>
         <div class="summary">
@@ -241,7 +246,7 @@
 
         <div class="section-title">WOCAS</div>
         <div class="inline-row" style="margin-bottom:8px;">
-          <textarea id="wocasX" placeholder="Sample WOCAS (leave blank if not applicable)" class="grow"></textarea>
+          <textarea id="wocasX" placeholder="Sample WOCAS (leave blank if none)" class="grow"></textarea>
           <div style="display:flex;flex-direction:column;gap:8px;">
             <button id="clearWocasX" class="btn small ghost" type="button">Clear WOCAS</button>
           </div>
@@ -286,11 +291,16 @@
   <div style="font-weight:700">Airyn Facebook</div>
 </div>
 
-        <label>Date (auto-update at 12:05 AM)</label>
-        <input id="dateFB" type="date" value="2026-02-17" />
-
-        <label style="margin-top:10px">Time Range (auto-update between x:10 to x:59 minutes)</label>
-        <input id="timeFB" type="text" value="0:00 PM to 0:00 PM" />
+<div style="display: flex; gap: 15px; align-items: flex-end;">
+    <div style="display: flex; flex-direction: column; flex: 1;">
+        <label style="font-size: 14px; margin-bottom: 5px;">Date (auto-update)</label>
+        <input id="dateFB" type="date" value="2026-02-17" style="padding: 8px; border-radius: 8px; border: 1px solid #ccc;" />
+    </div>
+    <div style="display: flex; flex-direction: column; flex: 1;">
+        <label style="font-size: 14px; margin-bottom: 5px;">Time Range (auto-update)</label>
+        <input id="timeFB" type="text" value="0:00 PM to 0:00 PM" style="padding: 8px; border-radius: 8px; border: 1px solid #ccc;" />
+    </div>
+</div>
 
         <div class="section-title">Summary</div>
         <div class="summary">
@@ -337,12 +347,12 @@
           <div class="col"><label>Auto sent by Airyn</label><input id="autoSentFB" type="number" placeholder="0" value="" /></div>
         </div>
 
-        <div class="section-title">Top Intents:</div>
+        <div class="section-title">Top Intents</div>
         <textarea id="topIntentsFB" placeholder="TOP INTENTS"></textarea>
 
-        <div class="section-title">WOCAS:</div>
+        <div class="section-title">WOCAS</div>
         <div class="inline-row" style="margin-bottom:8px;">
-          <textarea id="wocasFB" placeholder="Sample WOCAS (leave blank if not applicable)" class="grow"></textarea>
+          <textarea id="wocasFB" placeholder="Sample WOCAS (leave blank if none)" class="grow"></textarea>
           <div style="display:flex;flex-direction:column;gap:8px;">
             <button id="clearWocasFB" class="btn small ghost" type="button">Clear WOCAS</button>
           </div>
@@ -364,17 +374,18 @@
 
     <div class="card report-area" style="margin-top:18px;">
       <div style="display:flex;justify-content:space-between;align-items:center;">
-        <div style="font-weight:700">Latest Generated Report</div>
+        <div style="font-weight:700">Generated Report</div>
  	  <div class="template-header">
-	  <button id="copyTemplateBtn" class="btn ghost" type="button" style="margin-right: 8px;"> PUSO C-A Template</button>
-	  <button id="copyFindingsBtn" class="btn ghost" type="button" style="margin-right: 8px;"> Findings Template</button>
+	      <button id="copyTemplateBtn" class="btn ghost" type="button" style="margin-right: 8px;"> PUSO C-A Template</button>
+	      <button id="copyFindingsBtn" class="btn ghost" type="button" style="margin-right: 8px;"> Findings Template</button>
+	      <button id="copyEscalationBtn" class="btn ghost" type="button" style="margin-right: 8px;"> Case Escalation</button>
 	  </div>
         <div class="hint"></div>
       </div>
-      <textarea id="reportOutput" placeholder="Generated report will appear here..." style="margin-top:10px;"></textarea>
+      <textarea id="reportOutput" placeholder="Generated report/template will appear here..." style="margin-top:10px;"></textarea>
 
       <div class="footer">
-        <div class="hint">Airyn Report Generator © Developed and designed by: 52424370</div>
+        <div class="hint">Airyn Report Generator © 52424370</div>
         <div>
           <button id="clearBtn" class="btn ghost" type="button">Clear</button>
           <button id="copyBtn" class="btn ghost" type="button">Copy Report</button>
@@ -1150,6 +1161,21 @@ try {
       }
     }
 
+
+	// C-A ESCALATION COPY BUTTON
+document.getElementById('copyEscalationBtn').addEventListener('click', function() {
+    const template = `Salesforce Case ID:  
+FT/Work Order Number/SO/SR:  
+FT/Work Order Number/SO/SR Creation Date:  
+Customer Account Number:  
+Customer Name:  
+Customer Contact Number:  
+Address: 
+Reason:  `;
+    
+    updateReportBox(template);
+});
+	  
 	// PUSO TEMPLATE COPY BUTTON
 document.getElementById('copyTemplateBtn').addEventListener('click', function() {
     const template = `==== PUSO C-A NOTES =========================
