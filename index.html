@@ -1413,6 +1413,9 @@ updateDates();
 // Start scheduler
 scheduleNextUpdate();
 
+		      // Start the manager aligned to minute boundaries; manager will start/stop the 3-min worker between :40-:59
+      startManagerAligned();
+
       // Persist editable fields so numbers/text survive reloads.
       // NOTE: dateX/dateFB and timeX/timeFB are intentionally excluded so auto date/time behavior remains reliable.
       const editablePersistIds = [
