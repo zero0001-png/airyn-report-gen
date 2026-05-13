@@ -1370,11 +1370,59 @@ SAMPLE WOCAS:
       syncSummary('FB');
 
       // Auto-update date fields once on load (dates are NOT persisted)
-      const todayISO = getTodayISO();
-      const dateX = document.getElementById('dateX');
-      const dateFB = document.getElementById('dateFB');
-      if (dateX) dateX.value = todayISO;
-      if (dateFB) dateFB.value = todayISO;
+function getTodayFormatted() {
+  const today = new Date();
+
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const year = today.getFullYear();
+
+  return `${month}/${day}/${year}`;
+}
+
+function updateDates() {
+  const today = getTodayFormatted();
+
+  const dateX = document.getElementById('dateX');
+  const dateFB = document.getElementById('dateFB');
+
+  if (dateX) dateX.value = today;
+  if (dateFB) dateFB.value = today;
+
+  console.log('Dates updated:', today);
+}
+
+function scheduleNextUpdate() {
+  const now = new Date();
+
+  // Set next update to 12:05 AM
+  const next = new Date();
+  next.setHours(0, 5, 0, 0);
+
+  // If already past 12:05 AM today, move to tomorrow
+  if (now >= next) {
+    next.setDate(next.getDate() + 1);
+  }
+
+  // Time remaining until next update
+  const delay = next - now;
+
+  console.log('Next update at:', next);
+
+  setTimeout(() => {
+    updateDates();
+
+    // Continue updating every 24 hours
+    setInterval(updateDates, 24 * 60 * 60 * 1000);
+
+  }, delay);
+}
+
+// Initial update immediately when page loads
+updateDates();
+
+// Start automatic daily update
+scheduleNextUpdate();
 
       // Start the manager aligned to minute boundaries; manager will start/stop the 3-min worker between :40-:59
       startManagerAligned();
