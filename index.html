@@ -1370,18 +1370,26 @@ SAMPLE WOCAS:
       syncSummary('FB');
 
       // Auto-update date fields once on load (dates are NOT persisted)
-function getTodayISO() {
-  return new Date().toISOString().split('T')[0];
+function getTodayFormatted() {
+  const today = new Date();
+
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  const year = today.getFullYear();
+
+  return `${month}/${day}/${year}`;
 }
 
 function updateDates() {
-  const todayISO = getTodayISO();
+  const today = getTodayFormatted();
 
   const dateX = document.getElementById('dateX');
   const dateFB = document.getElementById('dateFB');
 
-  if (dateX) dateX.value = todayISO;
-  if (dateFB) dateFB.value = todayISO;
+  if (dateX) dateX.value = today;
+  if (dateFB) dateFB.value = today;
+
+  console.log('Updated date:', today);
 }
 
 function scheduleNextUpdate() {
@@ -1391,26 +1399,28 @@ function scheduleNextUpdate() {
   const next = new Date();
   next.setHours(0, 5, 0, 0);
 
-  // If already past 12:05 AM today, schedule tomorrow
+  // If already past today's 12:05 AM
   if (now >= next) {
     next.setDate(next.getDate() + 1);
   }
 
   const delay = next - now;
 
+  console.log('Next update:', next);
+
   setTimeout(() => {
     updateDates();
 
-    // Repeat every 24 hours after first trigger
+    // Repeat every 24 hours
     setInterval(updateDates, 24 * 60 * 60 * 1000);
 
   }, delay);
 }
 
-// Initial load
+// Run immediately on page load
 updateDates();
 
-// Start scheduler
+// Start auto-update scheduler
 scheduleNextUpdate();
 
 		      // Start the manager aligned to minute boundaries; manager will start/stop the 3-min worker between :40-:59
