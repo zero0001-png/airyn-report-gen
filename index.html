@@ -164,47 +164,36 @@
 #copyEscalationBtn:hover { background: var(--accent); }
 
 
-/* your input */
-.num-input{
+
+/* === NUMBER INPUT ENHANCEMENTS (keeps your layout intact) === */
+.two-col-fb .col input[type="number"]{
   width: 100%;
   box-sizing: border-box;
-
   padding: 8px;
   font-size: 14px;
-
   background: var(--input-bg);
   color: var(--muted);
-
   border: 1px solid var(--border);
   border-radius: 6px;
 }
 
-/* focus */
-.num-input:focus{
+/* Focus state (optional but nice) */
+.two-col-fb .col input[type="number"]:focus{
   outline: none;
   border-color: var(--accent);
   box-shadow: 0 0 0 3px rgba(47, 158, 68, 0.15);
 }
 
-/* ===== SPINNER CLEAN TRANSPARENT LOOK ===== */
-.num-input::-webkit-inner-spin-button,
-.num-input::-webkit-outer-spin-button{
-  -webkit-appearance: none;
-  margin: 0;
-
+/* === BIGGER + THEME ADAPTIVE ARROWS (Chrome/Edge/Safari) === */
+.two-col-fb .col input[type="number"]::-webkit-inner-spin-button,
+.two-col-fb .col input[type="number"]::-webkit-outer-spin-button{
   opacity: 1;
-
-  /* removes ugly native button background in some browsers */
-  background: transparent;
-
-  filter: opacity(1);
+  cursor: pointer;
+  transform: scale(1.5); /* 🔥 increases arrow size */
+  transform-origin: center;
+  filter: var(--spinner-filter);
 }
-
-/* This is the key part: style via accent color where supported */
-.num-input{
-  accent-color: var(--spinner-color);
-}
-
+	  
   </style>
 </head>
 <body>
