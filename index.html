@@ -181,16 +181,25 @@
   box-shadow: 0 0 0 3px rgba(47, 158, 68, 0.15);
 }
 
-/* === BIGGER SPINNER ARROWS === */
 .num-input::-webkit-inner-spin-button,
-.num-input::-webkit-outer-spin-button{
-  opacity: 1;
+.num-input::-webkit-outer-spin-button {
+  -webkit-appearance: none; /* Resets default browser styling */
+  margin: 0; 
   cursor: pointer;
-  background: #1a1c1d
-  transform: scale(1.5);
-  transform-origin: center;
+  
+  /* This removes the internal background and border */
+  background: transparent; 
+  border: none;
 
+  /* Use your existing filters and scaling */
   filter: var(--spinner-filter);
+  transform: scale(1.5); 
+  opacity: 0.8;
+}
+
+/* Optional: Slightly dim the arrows until you hover over the box */
+.num-input:hover::-webkit-inner-spin-button {
+  opacity: 1;
 }
 	  
   </style>
