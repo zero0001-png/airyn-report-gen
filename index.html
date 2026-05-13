@@ -162,37 +162,6 @@
 #copyFindingsBtn:hover { background: var(--accent); }
 #copyEscalationBtn { padding: 6px 12px; font-size: 13px; cursor: pointer; float: right; background: #d5d5d5; color: #000; border:2px solid; border-color: #000; }
 #copyEscalationBtn:hover { background: var(--accent); }
-
-
-
-/* === NUMBER INPUT ENHANCEMENTS (keeps your layout intact) === */
-.two-col-fb .col input[type="number"]{
-  width: 100%;
-  box-sizing: border-box;
-  padding: 8px;
-  font-size: 14px;
-  background: var(--input-bg);
-  color: var(--muted);
-  border: 1px solid var(--border);
-  border-radius: 6px;
-}
-
-/* Focus state (optional but nice) */
-.two-col-fb .col input[type="number"]:focus{
-  outline: none;
-  border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(47, 158, 68, 0.15);
-}
-
-/* === BIGGER + THEME ADAPTIVE ARROWS (Chrome/Edge/Safari) === */
-.two-col-fb .col input[type="number"]::-webkit-inner-spin-button,
-.two-col-fb .col input[type="number"]::-webkit-outer-spin-button{
-  opacity: 1;
-  cursor: pointer;
-  transform: scale(1.5); /* 🔥 increases arrow size */
-  transform-origin: center;
-  filter: var(--spinner-filter);
-}
 	  
   </style>
 </head>
@@ -251,10 +220,10 @@
 
         <div class="section-title">TOTAL FOR ALL DAYS (manual count)</div>
         <div class="two-col">
-          <div class="col"><label>Pending</label><input class="num-input" input id="pendingX" type="number" placeholder="0" value="0" /></div>
-          <div class="col"><label>Multiple Mention</label><input class="num-input" input id="multipleMentionX" type="number" placeholder="0" value="" /></div>
-          <div class="col"><label>Off-Topic</label><input class="num-input" input id="offTopicTotalX" type="number" placeholder="0" value="" /></div>
-          <div class="col"><label>Approved</label><input class="num-input" input id="approvedTotalX" type="number" placeholder="0" value="" /></div>
+          <div class="col"><label>Pending</label><input id="pendingX" type="number" placeholder="0" value="0" /></div>
+          <div class="col"><label>Multiple Mention</label><input id="multipleMentionX" type="number" placeholder="0" value="" /></div>
+          <div class="col"><label>Off-Topic</label><input id="offTopicTotalX" type="number" placeholder="0" value="" /></div>
+          <div class="col"><label>Approved</label><input id="approvedTotalX" type="number" placeholder="0" value="" /></div>
         </div>
 
 	<style>
