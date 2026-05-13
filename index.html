@@ -1370,62 +1370,48 @@ SAMPLE WOCAS:
       syncSummary('FB');
 
       // Auto-update date fields once on load (dates are NOT persisted)
-function getTodayFormatted() {
-  const today = new Date();
-
-  const month = String(today.getMonth() + 1).padStart(2, '0');
-  const day = String(today.getDate()).padStart(2, '0');
-  const year = today.getFullYear();
-
-  return `${month}/${day}/${year}`;
+function getTodayISO() {
+  return new Date().toISOString().split('T')[0];
 }
 
 function updateDates() {
-  const today = getTodayFormatted();
+  const todayISO = getTodayISO();
 
   const dateX = document.getElementById('dateX');
   const dateFB = document.getElementById('dateFB');
 
-  if (dateX) dateX.value = today;
-  if (dateFB) dateFB.value = today;
-
-  console.log('Dates updated:', today);
+  if (dateX) dateX.value = todayISO;
+  if (dateFB) dateFB.value = todayISO;
 }
 
 function scheduleNextUpdate() {
   const now = new Date();
 
-  // Set next update to 12:05 AM
+  // Next 12:05 AM
   const next = new Date();
   next.setHours(0, 5, 0, 0);
 
-  // If already past 12:05 AM today, move to tomorrow
+  // If already past 12:05 AM today, schedule tomorrow
   if (now >= next) {
     next.setDate(next.getDate() + 1);
   }
 
-  // Time remaining until next update
   const delay = next - now;
-
-  console.log('Next update at:', next);
 
   setTimeout(() => {
     updateDates();
 
-    // Continue updating every 24 hours
+    // Repeat every 24 hours after first trigger
     setInterval(updateDates, 24 * 60 * 60 * 1000);
 
   }, delay);
 }
 
-// Initial update immediately when page loads
+// Initial load
 updateDates();
 
-// Start automatic daily update
+// Start scheduler
 scheduleNextUpdate();
-
-      // Start the manager aligned to minute boundaries; manager will start/stop the 3-min worker between :40-:59
-      startManagerAligned();
 
       // Persist editable fields so numbers/text survive reloads.
       // NOTE: dateX/dateFB and timeX/timeFB are intentionally excluded so auto date/time behavior remains reliable.
