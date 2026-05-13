@@ -1376,6 +1376,28 @@ SAMPLE WOCAS:
       if (dateX) dateX.value = todayISO;
       if (dateFB) dateFB.value = todayISO;
 
+	function scheduleNext1205() {
+  const now = new Date();
+
+  // target time: 12:05 today
+  let next = new Date();
+  next.setHours(0, 5, 0, 0);
+
+  // if 12:05 already passed today, schedule for tomorrow
+  if (now >= next) {
+    next.setDate(next.getDate() + 1);
+  }
+
+  const delay = next - now;
+
+  setTimeout(() => {
+    updateDates();
+    scheduleNext1205(); // reschedule for next day
+  }, delay);
+}
+
+scheduleNext1205();
+
 		      // Start the manager aligned to minute boundaries; manager will start/stop the 3-min worker between :40-:59
       startManagerAligned();
 
