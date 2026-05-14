@@ -396,290 +396,362 @@
   </div>
 
 <script>
-const intentMap = {
-// REPAIR
-"no internet connection": "REPAIR",
-"walang internet connection": "REPAIR",
-	"walang internet": "REPAIR",
-	"walang net": "REPAIR",
-"no internet": "REPAIR",
-"walang internet": "REPAIR",
-"hindi makaconnect internet": "REPAIR",
-"hindi gumagana internet": "REPAIR",
-"slow internet": "REPAIR",
-"napakabagal internet": "REPAIR",
-"walang wifi": "REPAIR",
-"no wifi": "REPAIR",
-"slow wifi": "REPAIR",
-"bagal ng wifi": "REPAIR",
-"no signal": "REPAIR",
-"walang signal": "REPAIR",
-"loss of signal": "REPAIR",
-"bagal ng signal": "REPAIR",
-"slow signal": "REPAIR",
-"no connection": "REPAIR",
-"intermittent connection": "REPAIR",
-"unstable connection": "REPAIR",
-"connection keeps dropping": "REPAIR",
-"random disconnection": "REPAIR",
-"outage": "REPAIR",
-"service interruption": "REPAIR",
-"no service": "REPAIR",
-"slow speed": "REPAIR",
-"high ping": "REPAIR",
-"lagging internet": "REPAIR",
-"buffering": "REPAIR",
-"constant buffering": "REPAIR",
-"router blinking red": "REPAIR",
-"los light": "REPAIR",
-"red los": "REPAIR",
-	"los": "REPAIR",
-	"blinking red": "REPAIR",
-"modem no internet": "REPAIR",
-"router issue": "REPAIR",
-"modem issue": "REPAIR",
-"wifi keeps disconnecting": "REPAIR",
-"internet keeps dropping": "REPAIR",
-"putol internet": "REPAIR",
-"follow up": "REPAIR",
-"wala pa rin": "REPAIR",
-"wala pa din": "REPAIR",
-"wlang internet": "REPAIR",
-	"walang landline": "REPAIR",
-	"no landline": "REPAIR",
-	"wala dial tone": "REPAIR",
-	"no dial tone": "REPAIR",
-	"sira telepono": "REPAIR",
-	"di gumagana landline": "REPAIR",
-	"di gumagana telepono": "REPAIR",
-	"walang dial tone": "REPAIR",
-	"napakabagal": "REPAIR",
-	"repair ticket": "REPAIR",
-	"repair": "REPAIR",
-	"wala lagi net": "REPAIR",
-	"wla lagi net": "REPAIR",
-	"wala laging net": "REPAIR",
-	"wla laging net": "REPAIR",
-	"serbisyo": "REPAIR",
-	"parin internet": "REPAIR",
-	"padin internet": "REPAIR",
-	"pa dn internet": "REPAIR",
-	"pa rn internet": "REPAIR",
-	"pawala wala": "REPAIR",
-	"lost": "REPAIR",
-	"dialtone": "REPAIR",
-	"dial tone": "REPAIR",
-	"down for days": "REPAIR",
-	"sobrang bagal": "REPAIR",
-	"walang net": "REPAIR",
-	"wala net": "REPAIR",
-	"without net": "REPAIR",
-	"without internet": "REPAIR",
-	"without internet connection": "REPAIR",
-	"connection": "REPAIR",
-	"downtime": "REPAIR",
-	"internet service": "REPAIR",
-	"technical concerns": "REPAIR",
-	"technical": "REPAIR",
-	"technical issues": "REPAIR",
-	"not working": "REPAIR",
 
+// =========================
+// INTENT PRIORITY
+// Higher number = stronger priority
+// =========================
 
-// AFTERSALES INQUIRY
-"downgrade": "AFTERSALES INQUIRY",
-"upgrade": "AFTERSALES INQUIRY",
-"plan change": "AFTERSALES INQUIRY",
-"relocation": "RELOCATION",
-"disconnection": "DISCONNECTION",
-"termination": "DISCONNECTION",
-"migrate to fiber": "AFTERSALES INQUIRY",
-"transfer service": "RELOCATION",
-"application": "NEW APPLICATION",
-"apply": "NEW APPLICATION",
-"mag upgrade": "AFTERSALES INQUIRY",
-"mag downgrade": "AFTERSALES INQUIRY",
-"magpalit ng plan": "AFTERSALES INQUIRY",
-"lipat ng address": "RELOCATION",
-"magpakabit": "NEW APPLICATION",
-"pa install": "NEW APPLICATION",
-"recontract": "AFTERSALES INQUIRY",
-"request transfer": "RELOCATION",
-"installation": "NEW APPLICATION",
-"new connection": "NEW APPLICATION",
-	"service order": "AFTERSALES INQUIRY",
-	"activation": "NEW APPLICATION",
-
-
-
-// CUSTOMER SERVICE
-"customer service": "CUSTOMER SERVICE",
-"support": "CUSTOMER SERVICE",
-"help": "CUSTOMER SERVICE",
-"hotline": "CUSTOMER SERVICE",
-"agent": "CUSTOMER SERVICE",
-"inquiry": "CUSTOMER SERVICE",
-"assistance": "CUSTOMER SERVICE",
-"hindi ai": "CUSTOMER SERVICE",
-"di sumasagot": "CUSTOMER SERVICE",
-"no response": "CUSTOMER SERVICE",
-"dm": "CUSTOMER SERVICE",
-"walang sumasagot": "CUSTOMER SERVICE",
-"hindi sumasagot": "CUSTOMER SERVICE",
-"hindi makausap": "CUSTOMER SERVICE",
-"assist": "CUSTOMER SERVICE",
-"paki tulong": "CUSTOMER SERVICE",
-"pa help": "CUSTOMER SERVICE",
-"wala pa update": "CUSTOMER SERVICE",
-"hindi nagrereply": "CUSTOMER SERVICE",
-	"messenger": "CUSTOMER SERVICE",
-
-
-// BRAND HATE
-"hate": "BRAND HATE",
-"angry": "BRAND HATE",
-"frustrated": "BRAND HATE",
-"useless": "BRAND HATE",
-"basura": "BRAND HATE",
-"worst": "BRAND HATE",
-"disappointed": "BRAND HATE",
-"poor service": "BRAND HATE",
-"unreliable": "BRAND HATE",
-"doesn't care": "BRAND HATE",
-"kapal": "BRAND HATE",
-"tigas": "BRAND HATE",
-"kupal": "BRAND HATE",
-"putangina": "BRAND HATE",
-"bulok": "BRAND HATE",
-"bwisit": "BRAND HATE",
-"nakakainis": "BRAND HATE",
-"walang kwenta": "BRAND HATE",
-"pangit serbisyo": "BRAND HATE",
-"loko": "BRAND HATE",
-"hassle": "BRAND HATE",
-"bad service": "BRAND HATE",
-"pangit service": "BRAND HATE",
-"panget service": "BRAND HATE",
-"horrible": "BRAND HATE",
-"terrible": "BRAND HATE",
-"garbage": "BRAND HATE",
-"trash": "BRAND HATE",
-"annoying": "BRAND HATE",
-"waste": "BRAND HATE",
-"tangina": "BRAND HATE",
-"pldc": "BRAND HATE",
-"ripoff": "BRAND HATE",
-	"t*ngina": "BRAND HATE",
-	"t*ng ina": "BRAND HATE",
-	"f*ck": "BRAND HATE",
-	"put*ngina": "BRAND HATE",
-	"pot*ngina": "BRAND HATE",
-
-
-// PRODUCTS AND PROMOS
-"promo": "PRODUCTS AND PROMOS",
-"discount": "PRODUCTS AND PROMOS",
-"offer": "PRODUCTS AND PROMOS",
-"bundle": "PRODUCTS AND PROMOS",
-"free": "PRODUCTS AND PROMOS",
-"deal": "PRODUCTS AND PROMOS",
-"package": "PRODUCTS AND PROMOS",
-"new plan": "PRODUCTS AND PROMOS",
-"upgrade promo": "PRODUCTS AND PROMOS",
-"may promo": "PRODUCTS AND PROMOS",
-"murang plan": "PRODUCTS AND PROMOS",
-"limited offer": "PRODUCTS AND PROMOS",
-"speed boost": "PRODUCTS AND PROMOS",
-"netflix": "PRODUCTS AND PROMOS",
-"hbo": "PRODUCTS AND PROMOS",
-"cignal": "PRODUCTS AND PROMOS",
-"fiber upgrade promo": "PRODUCTS AND PROMOS",
-
-
-// PERSONNEL COMPLAINTS
-"complaint": "PERSONNEL COMPLAINTS",
-"staff": "PERSONNEL COMPLAINTS",
-"employee": "PERSONNEL COMPLAINTS",
-"technician": "PERSONNEL COMPLAINTS",
-"installer": "PERSONNEL COMPLAINTS",
-"rude": "PERSONNEL COMPLAINTS",
-"unprofessional": "PERSONNEL COMPLAINTS",
-"agent behavior": "PERSONNEL COMPLAINTS",
-"matagal technician": "PERSONNEL COMPLAINTS",
-"hindi dumating": "PERSONNEL COMPLAINTS",
-"late installer": "PERSONNEL COMPLAINTS",
-"masungit": "PERSONNEL COMPLAINTS",
-"rude technician": "PERSONNEL COMPLAINTS",
-"walang update installer": "PERSONNEL COMPLAINTS",
-"nagpabayad": "PERSONNEL COMPLAINTS",
-"mga bastos": "PERSONNEL COMPLAINTS",
-"napakabastos": "PERSONNEL COMPLAINTS",
-"disrespect": "PERSONNEL COMPLAINTS",
-"walang galang": "PERSONNEL COMPLAINTS",
-"bastos": "PERSONNEL COMPLAINTS",
-"nanghingi": "PERSONNEL COMPLAINTS",
-
-
-// BILLING INQUIRY
-"bill": "BILLING INQUIRY",
-"billing": "BILLING INQUIRY",
-"payment": "BILLING INQUIRY",
-"due date": "BILLING INQUIRY",
-"charges": "BILLING INQUIRY",
-"fees": "BILLING INQUIRY",
-"balance": "BILLING INQUIRY",
-"invoice": "BILLING INQUIRY",
-"overdue": "BILLING INQUIRY",
-"unpaid": "BILLING INQUIRY",
-"bayad": "BILLING INQUIRY",
-"singil": "BILLING INQUIRY",
-"sobrang charge": "BILLING INQUIRY",
-"maling bill": "BILLING INQUIRY",
-"magkano bill": "BILLING INQUIRY",
-"overcharged": "BILLING INQUIRY",
-"billing issue": "BILLING INQUIRY",
-"wrong bill": "BILLING INQUIRY",
-"double charge": "BILLING INQUIRY",
-"refund": "BILLING INQUIRY",
-	"refund link": "BILLING INQUIRY",
-"payment failed": "BILLING INQUIRY",
-"receipt": "BILLING INQUIRY",
-"rebate": "BILLING INQUIRY",
-"dispute": "BILLING INQUIRY",
-"nagbayad": "BILLING INQUIRY",
-"bayad": "BILLING INQUIRY",
-"paid": "BILLING INQUIRY",
-"pay": "BILLING INQUIRY",
-"paying": "BILLING INQUIRY",
-"fraud": "BILLING INQUIRY",
-"scam": "BILLING INQUIRY",
-"reconnection": "BILLING INQUIRY",
-"no service after payment": "BILLING INQUIRY"
-
+const intentPriority = {
+  "REPAIR": 100,
+  "AFTERSALES INQUIRY": 80,
+  "BILLING INQUIRY": 70,
+  "CUSTOMER SERVICE": 50,
+  "BRAND HATE": 30,
+  "PRODUCTS AND PROMOS": 20,
+  "PERSONNEL COMPLAINTS": 10,
+  "NEW APPLICATION": 60,
+  "RELOCATION": 60,
+  "DISCONNECTION": 60
 };
 
-// escape regex helper
+
+// =========================
+// KEYWORDS + WEIGHTS
+// =========================
+
+const intentKeywords = {
+
+  "REPAIR": [
+    { term: "no internet connection", weight: 15 },
+    { term: "walang internet connection", weight: 15 },
+    { term: "walang internet", weight: 15 },
+    { term: "walang net", weight: 12 },
+    { term: "no internet", weight: 15 },
+    { term: "slow internet", weight: 10 },
+    { term: "bagal ng connection", weight: 10 },
+    { term: "napakabagal internet", weight: 10 },
+    { term: "walang wifi", weight: 12 },
+    { term: "no wifi", weight: 12 },
+    { term: "slow wifi", weight: 8 },
+    { term: "bagal ng wifi", weight: 8 },
+    { term: "no signal", weight: 10 },
+    { term: "walang signal", weight: 10 },
+    { term: "loss of signal", weight: 10 },
+    { term: "intermittent connection", weight: 10 },
+    { term: "intermittent", weight: 10 },
+    { term: "intermittent signal", weight: 10 },
+    { term: "unstable connection", weight: 10 },
+    { term: "connection keeps dropping", weight: 12 },
+    { term: "random disconnection", weight: 12 },
+    { term: "outage", weight: 15 },
+    { term: "service interruption", weight: 15 },
+    { term: "no service", weight: 10 },
+    { term: "high ping", weight: 8 },
+    { term: "high latency", weight: 8 },
+    { term: "latency", weight: 8 },
+    { term: "lagging internet", weight: 8 },
+    { term: "buffering", weight: 6 },
+    { term: "router blinking red", weight: 15 },
+    { term: "los light", weight: 15 },
+    { term: "red los", weight: 15 },
+    { term: "wifi keeps disconnecting", weight: 12 },
+    { term: "internet keeps dropping", weight: 12 },
+    { term: "putol internet", weight: 12 },
+    { term: "wala pa rin", weight: 5 },
+    { term: "wala pa din", weight: 5 },
+    { term: "walang landline", weight: 12 },
+    { term: "no dial tone", weight: 12 },
+    { term: "repair ticket", weight: 8 },
+    { term: "ticket", weight: 8 },
+    { term: "tickets", weight: 8 },
+    { term: "repair", weight: 8 },
+    { term: "technical issues", weight: 6 },
+    { term: "technical concerns", weight: 6 },
+    { term: "ano na", weight: 2 },
+    { term: "nawawala", weight: 2 },
+    { term: "nawala", weight: 2 },
+    { term: "wfh", weight: 2 },
+    { term: "internet", weight: 2 },
+    { term: "net", weight: 2 },
+    { term: "wifi", weight: 5 },
+    { term: "connection", weight: 5 },
+    { term: "landline", weight: 5 },
+    { term: "signal", weight: 5 },
+    { term: "report a problem", weight: 15 },
+    { term: "los", weight: 5 },
+    { term: "maintenance", weight: 5 },
+    { term: "disconnected", weight: 5 },
+    { term: "interruption", weight: 5 },
+    { term: "naayos", weight: 2 },
+    { term: "naaayos", weight: 2 },
+{ term: "service down for days", weight: 20 },
+{ term: "down for days", weight: 18 },
+{ term: "no internet for days", weight: 20 },
+{ term: "internet down", weight: 15 },
+{ term: "downtime", weight: 15 },
+{ term: "service being down", weight: 18 },
+{ term: "no connection for days", weight: 20 },
+    { term: "not working", weight: 8 }
+  ],
+
+
+  "AFTERSALES INQUIRY": [
+    { term: "downgrade", weight: 12 },
+    { term: "upgrade", weight: 12 },
+    { term: "plan change", weight: 12 },
+    { term: "migrate to fiber", weight: 15 },
+    { term: "mag upgrade", weight: 12 },
+    { term: "mag downgrade", weight: 12 },
+    { term: "magpalit ng plan", weight: 12 },
+    { term: "recontract", weight: 10 },
+    { term: "service order", weight: 8 }
+  ],
+
+
+  "RELOCATION": [
+    { term: "relocation", weight: 15 },
+    { term: "transfer service", weight: 15 },
+    { term: "request for transfer", weight: 15 },
+    { term: "lipat ng address", weight: 15 },
+    { term: "transfer", weight: 5 },
+    { term: "request transfer", weight: 15 }
+  ],
+
+
+  "DISCONNECTION": [
+    { term: "disconnection", weight: 15 },
+    { term: "termination", weight: 15 }
+  ],
+
+
+  "NEW APPLICATION": [
+    { term: "application", weight: 10 },
+    { term: "apply", weight: 10 },
+    { term: "magpakabit", weight: 15 },
+    { term: "pa install", weight: 15 },
+    { term: "installation", weight: 12 },
+    { term: "new connection", weight: 15 },
+    { term: "activation", weight: 10 }
+  ],
+
+
+"BILLING INQUIRY": [
+  { term: "bill", weight: 6 },
+  { term: "billing", weight: 8 },
+  { term: "payment", weight: 6 },
+  { term: "due date", weight: 8 },
+  { term: "charges", weight: 6 },
+  { term: "fees", weight: 5 },
+  { term: "balance", weight: 6 },
+  { term: "invoice", weight: 8 },
+  { term: "overdue", weight: 10 },
+  { term: "unpaid", weight: 10 },
+  { term: "bayad", weight: 5 },
+  { term: "singil", weight: 8 },
+  { term: "sobrang charge", weight: 15 },
+  { term: "maling bill", weight: 15 },
+  { term: "magkano bill", weight: 12 },
+  { term: "overcharged", weight: 15 },
+  { term: "billing issue", weight: 15 },
+  { term: "wrong bill", weight: 15 },
+  { term: "double charge", weight: 18 },
+  { term: "refund", weight: 15 },
+  { term: "refund link", weight: 18 },
+  { term: "payment failed", weight: 15 },
+  { term: "receipt", weight: 6 },
+  { term: "rebate", weight: 10 },
+  { term: "dispute", weight: 12 },
+  { term: "nagbayad", weight: 8 },
+  { term: "paid", weight: 5 },
+  { term: "pay", weight: 3 },
+  { term: "paying", weight: 3 },
+  { term: "fraud", weight: 18 },
+  { term: "scam", weight: 18 },
+  { term: "reconnection", weight: 12 },
+{ term: "sinisingil", weight: 10 },
+{ term: "maputulan", weight: 12 },
+{ term: "pinutulan", weight: 12 },
+{ term: "di nagamit", weight: 15 },
+{ term: "hindi nagamit", weight: 15 },
+{ term: "di naman nagamit", weight: 18 },
+{ term: "hinde nagamit", weight: 18 },
+  { term: "no service after payment", weight: 20 }
+],
+
+
+  "CUSTOMER SERVICE": [
+    { term: "customer service", weight: 12 },
+    { term: "support", weight: 5 },
+    { term: "help", weight: 3 },
+    { term: "tulong", weight: 3 },
+    { term: "chat", weight: 3 },
+    { term: "hotline", weight: 8 },
+    { term: "agent", weight: 5 },
+    { term: "assistance", weight: 6 },
+    { term: "di sumasagot", weight: 12 },
+    { term: "no response", weight: 10 },
+    { term: "walang sumasagot", weight: 12 },
+    { term: "hindi sumasagot", weight: 12 },
+    { term: "hindi makausap", weight: 10 },
+    { term: "paki tulong", weight: 8 },
+    { term: "pa help", weight: 6 },
+    { term: "service", weight: 6 },
+    { term: "serbisyo", weight: 6 },
+    { term: "wala pa update", weight: 8 },
+    { term: "pm", weight: 2 },
+    { term: "care", weight: 2 },
+    { term: "dm", weight: 2 },
+    { term: "cs", weight: 2 },
+    { term: "ai", weight: 2 },
+    { term: "hindi nagrereply", weight: 10 },
+    { term: "messenger", weight: 3 }
+  ],
+
+
+  "BRAND HATE": [
+    { term: "hate", weight: 10 },
+    { term: "angry", weight: 10 },
+    { term: "frustrated", weight: 10 },
+    { term: "useless", weight: 12 },
+    { term: "basura", weight: 15 },
+    { term: "worst", weight: 12 },
+    { term: "disappointed", weight: 8 },
+    { term: "poor service", weight: 10 },
+    { term: "unreliable", weight: 10 },
+    { term: "horrific", weight: 10 },
+    { term: "putangina", weight: 20 },
+    { term: "bulok", weight: 15 },
+    { term: "bwisit", weight: 12 },
+    { term: "nakakainis", weight: 10 },
+    { term: "walang kwenta", weight: 18 },
+    { term: "bad service", weight: 10 },
+    { term: "horrible", weight: 12 },
+    { term: "terrible", weight: 12 },
+    { term: "garbage", weight: 12 },
+    { term: "trash", weight: 12 },
+    { term: "reklamo", weight: 5 },
+    { term: "tngina", weight: 5 },
+    { term: "t*ng ina", weight: 5 },
+    { term: "put*ngina", weight: 5 },
+    { term: "t*ngina", weight: 5 },
+    { term: "fuck", weight: 5 },
+    { term: "fuck you", weight: 7 },
+    { term: "pldc", weight: 5 },
+    { term: "bad ratings", weight: 5 },
+    { term: "ripoff", weight: 15 },
+{ term: "grabe ang lala", weight: 20 },
+{ term: "ang lala", weight: 18 },
+{ term: "grabe", weight: 8 },
+{ term: "lala ng service", weight: 18 },
+{ term: "lousy service", weight: 15 }
+  ],
+
+
+  "PRODUCTS AND PROMOS": [
+    { term: "promo", weight: 10 },
+    { term: "discount", weight: 10 },
+    { term: "offer", weight: 8 },
+    { term: "bundle", weight: 8 },
+    { term: "deal", weight: 8 },
+    { term: "package", weight: 6 },
+    { term: "new plan", weight: 10 },
+    { term: "speed boost", weight: 10 },
+    { term: "netflix", weight: 8 },
+    { term: "hbo", weight: 8 },
+    { term: "always on", weight: 8 },
+    { term: "fiber unli all", weight: 8 },
+    { term: "fiber netflix", weight: 8 },
+    { term: "fiber plans", weight: 8 },
+    { term: "fiber plan", weight: 8 },
+    { term: "free installation", weight: 8 },
+    { term: "add on", weight: 8 },
+    { term: "cignal", weight: 8 }
+  ],
+
+
+  "PERSONNEL COMPLAINTS": [
+    { term: "complaint", weight: 8 },
+    { term: "staff", weight: 8 },
+    { term: "employee", weight: 8 },
+    { term: "technician", weight: 12 },
+    { term: "installer", weight: 12 },
+    { term: "rude", weight: 12 },
+    { term: "unprofessional", weight: 12 },
+    { term: "hindi dumating", weight: 15 },
+    { term: "late installer", weight: 12 },
+    { term: "masungit", weight: 10 },
+    { term: "rude technician", weight: 15 },
+    { term: "napakabastos", weight: 15 },
+    { term: "walang galang", weight: 12 },
+    { term: "bastos", weight: 10 }
+  ]
+
+};
+// =========================
+// NORMALIZE TEXT
+// =========================
+
+function normalizeText(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\s]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+
+// =========================
+// ESCAPE REGEX
+// =========================
+
 function escapeRegex(str) {
   return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-// build regex patterns once
-const patterns = Object.entries(intentMap).map(([key, intent]) => {
-  return {
-    intent,
-    regex: new RegExp(`\\b${escapeRegex(key.toLowerCase())}\\b`, "i")
-  };
-});
+
+// =========================
+// BUILD PATTERNS
+// Longer phrases first
+// =========================
+
+const patterns = [];
+for (const [intent, keywords] of Object.entries(intentKeywords)) {
+  for (const item of keywords) {
+    patterns.push({
+      intent,
+      weight: item.weight,
+      term: item.term,
+
+      regex: new RegExp(
+        `(^|\\s)${escapeRegex(item.term.toLowerCase())}(?=\\s|$)`,
+        "i"
+      )
+    });
+  }
+}
+
+// prioritize longer phrases
+patterns.sort((a, b) => b.term.length - a.term.length);
+// =========================
+// DETECT TOP INTENTS
+// =========================
 
 function getTopOverallIntents(batchInput) {
-  const text = batchInput.toLowerCase().trim();
+  const text = normalizeText(batchInput);
   const lines = text.split("\n");
-
   const scores = {};
 
   for (const line of lines) {
     for (const p of patterns) {
       if (p.regex.test(line)) {
-        scores[p.intent] = (scores[p.intent] || 0) + 1;
+        // initialize with intent priority once
+        if (!scores[p.intent]) {
+          scores[p.intent] = intentPriority[p.intent] || 0;
+        }
+
+        // add keyword score
+        scores[p.intent] += p.weight;
       }
     }
   }
@@ -690,29 +762,42 @@ function getTopOverallIntents(batchInput) {
     .map(([intent]) => intent);
 }
 
-// INPUT listeners (unchanged)
+
+// =========================
+// INPUT LISTENERS
+// =========================
+
 document.getElementById("wocasX")?.addEventListener("input", function () {
   const topIntents = getTopOverallIntents(this.value);
   document.getElementById("topIntentsX").value =
-    topIntents.length ? topIntents.join("\n") : "";
+    topIntents.length
+      ? topIntents.join("\n")
+      : "";
 });
+
 
 document.getElementById("clearWocasX")?.addEventListener("click", function () {
   document.getElementById("wocasX").value = "";
   document.getElementById("topIntentsX").value = "";
 });
 
+
 document.getElementById("wocasFB")?.addEventListener("input", function () {
   const topIntents = getTopOverallIntents(this.value);
   document.getElementById("topIntentsFB").value =
-    topIntents.length ? topIntents.join("\n") : "";
+    topIntents.length
+      ? topIntents.join("\n")
+      : "";
 });
+
 
 document.getElementById("clearWocasFB")?.addEventListener("click", function () {
   document.getElementById("wocasFB").value = "";
   document.getElementById("topIntentsFB").value = "";
 });
+
 </script>
+
 
 
 <script>
@@ -720,14 +805,12 @@ document.getElementById("clearWocasFB")?.addEventListener("click", function () {
 
 document.getElementById('copyBtn').addEventListener('click', function() {
     const reportBox = document.getElementById('reportOutput');
-    
     if (reportBox && reportBox.value.trim() !== "") {
         // Copy the text
         navigator.clipboard.writeText(reportBox.value).then(() => {
             // Give feedback
             const originalText = this.innerText;
             this.innerText = "Copied!";
-            
             setTimeout(() => {
                 this.innerText = originalText;
             }, 2000);
