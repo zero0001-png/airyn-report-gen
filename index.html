@@ -1415,36 +1415,44 @@ SAMPLE WOCAS:
       }, msToNextMinute);
     }
 
-    // HOURLY NOTIFICATION DESKTOP REMINDER AT :55
-    function checkAndTriggerHourlyReminder() {
-      const now = new Date();
-      if (now.getMinutes() === 55 && now.getSeconds() === 0) {
-        if (!("Notification" in window)) {
-          console.log("This browser does not support desktop notifications");
-          return;
-        }
+// HOURLY NOTIFICATION DESKTOP REMINDER AT :55 (with 5-second auto-close)
+    function showAirynNotification() {
+      if (!("Notification" in window)) {
+        alert("This browser does not support desktop notifications.");
+        return;
+      }
 
-        if (Notification.permission === "granted") {
-          new Notification("Airyn Reporting Reminder", {
-            body: "It's almost the top of the hour!",
-            icon: ""
-          });
-			
-			setTimeout(() => {
+      const createNotification = () => {
+        const notification = new Notification("Airyn Reporting Reminder", {
+          body: "It's almost the top of the hour!",
+          icon: ""
+        });
+
+        // Automatically close the notification after 5 seconds (5000 milliseconds)
+        setTimeout(() => {
           notification.close();
         }, 10000);
       };
-		  
-        } else if (Notification.permission !== "denied") {
-          Notification.requestPermission().then(permission => {
-            if (permission === "granted") {
-              new Notification("Airyn Reporting Reminder", {
-                body: "",
-                icon: ""
-              });
-            }
-          });
-        }
+
+      if (Notification.permission === "granted") {
+        createNotification();
+      } else if (Notification.permission !== "denied") {
+        Notification.requestPermission().then(permission => {
+          if (permission === "granted") {
+            createNotification();
+          } else {
+            alert("Notification permission was denied.");
+          }
+        });
+      } else {
+        alert("Notification permission is blocked. Please allow notifications in your browser settings.");
+      }
+    }
+
+    function checkAndTriggerHourlyReminder() {
+      const now = new Date();
+      if (now.getMinutes() === 55 && now.getSeconds() === 0) {
+        showAirynNotification();
       }
     }
 
