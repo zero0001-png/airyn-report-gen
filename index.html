@@ -1426,9 +1426,15 @@ SAMPLE WOCAS:
 
         if (Notification.permission === "granted") {
           new Notification("Airyn Reporting Reminder", {
-            body: "It's almost the top of the hour! Time to prepare or check your Airyn reports.",
+            body: "It's almost the top of the hour!",
             icon: ""
           });
+			
+			setTimeout(() => {
+          notification.close();
+        }, 10000);
+      };
+		  
         } else if (Notification.permission !== "denied") {
           Notification.requestPermission().then(permission => {
             if (permission === "granted") {
