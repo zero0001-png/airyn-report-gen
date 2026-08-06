@@ -854,7 +854,7 @@ document.getElementById('copyBtn').addEventListener('click', function() {
 </script>
 
 
-  <script>
+<script>
     // Theme handling with persistence in localStorage
     const themeToggle = document.getElementById('themeToggle');
     const THEME_KEY = 'airyn_theme'; // 'dark' or 'light'
@@ -938,7 +938,7 @@ startScheduler();
 
     // Build report for one agent using requested format
     function buildAgentReport(agentName, dateISO, timeRange, humanLoopVal, autoApprovedVal, offTopicApprovedVal,
-                              totals, selected, overallApproved, topIntents, sampleWocas) {
+                            totals, selected, overallApproved, topIntents, sampleWocas) {
       const dateLong = formatDateISOToLong(dateISO) || '';
       const lines = [];
 
@@ -1415,6 +1415,43 @@ SAMPLE WOCAS:
       }, msToNextMinute);
     }
 
+    // HOURLY NOTIFICATION DESKTOP REMINDER AT :55
+    function checkAndTriggerHourlyReminder() {
+      const now = new Date();
+      if (now.getMinutes() === 55 && now.getSeconds() === 0) {
+        if (!("Notification" in window)) {
+          console.log("This browser does not support desktop notifications");
+          return;
+        }
+
+        if (Notification.permission === "granted") {
+          new Notification("Airyn Reporting Reminder", {
+            body: "It's almost the top of the hour! Time to prepare or check your Airyn reports.",
+            icon: ""
+          });
+        } else if (Notification.permission !== "denied") {
+          Notification.requestPermission().then(permission => {
+            if (permission === "granted") {
+              new Notification("Airyn Reporting Reminder", {
+                body: "",
+                icon: ""
+              });
+            }
+          });
+        }
+      }
+    }
+
+    function startHourlyReminderService() {
+      // Request permission on startup if not already decided
+      if ("Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission();
+      }
+
+      // Check every second to catch the exact second mark for HH:55:00
+      setInterval(checkAndTriggerHourlyReminder, 1000);
+    }
+
     window.addEventListener('beforeunload', () => {
       if (intervalId !== null) clearInterval(intervalId);
       if (managerId !== null) clearInterval(managerId);
@@ -1493,6 +1530,9 @@ scheduleNext1205();
 
 		      // Start the manager aligned to minute boundaries; manager will start/stop the 3-min worker between :40-:59
       startManagerAligned();
+
+      // Start hourly desktop notification check at HH:55
+      startHourlyReminderService();
 
       // Persist editable fields so numbers/text survive reloads.
       // NOTE: dateX/dateFB and timeX/timeFB are intentionally excluded so auto date/time behavior remains reliable.
