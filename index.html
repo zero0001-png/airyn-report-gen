@@ -1895,6 +1895,16 @@ SAMPLE WOCAS:
       // ensure summaries reflect cleared values
       syncSummary('X');
       syncSummary('FB');
+
+      // Briefly show confirmation, then revert button to its original state
+      const btn = document.getElementById('clearBtn');
+      const prev = btn.textContent;
+      btn.textContent = 'Cleared ✓';
+      btn.disabled = true;
+      setTimeout(() => {
+        btn.textContent = prev;
+        btn.disabled = false;
+      }, 900);
     });
 
 // AUTO UPDATE TIME RANGE (managed interval between :10 and :59)
