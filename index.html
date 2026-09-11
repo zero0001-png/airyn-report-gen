@@ -914,6 +914,7 @@ textarea::placeholder {
       <div style="display:flex;justify-content:space-between;align-items:center;">
         <div style="font-weight:700">Generated Report</div>
  	  <div class="template-header">
+		  <button id="copyEscalationBtn" class="btn ghost" type="button" style="margin-right: 8px;"> Escalation Template</button>
 	      <button id="copyTemplateBtn" class="btn ghost" type="button" style="margin-right: 8px;"> Callback Template</button>
 	      <button id="copyFindingsBtn" class="btn ghost" type="button" style="margin-right: 8px;"> Findings Template</button>
 	  </div>
@@ -1880,6 +1881,20 @@ THREADS SCANNING - 0
 SAMPLE WOCAS:
 - 
 - `;
+
+    updateReportBox(template);
+});
+
+
+document.getElementById('copyEscalationBtn').addEventListener('click', function() {
+    const template = `Salesforce Case ID: 
+FT/Work Order Number/SO/SR: 
+FT/Work Order Number/SO/SR Creation Date: 
+Customer Account Number: 
+Customer Name: 
+Customer Contact Number: 
+Address: 
+Reason: `;
 
     updateReportBox(template);
 });
