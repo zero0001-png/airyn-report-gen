@@ -28,6 +28,11 @@
       --glass-shadow: 0 8px 32px rgba(31,38,135,0.12);
       --glass-highlight: rgba(255,255,255,0.35);
 
+      /* agent title chip — light mode */
+      --title-chip-bg: rgba(255,255,255,0.75);
+      --title-chip-border: rgba(0,0,0,0.08);
+      --title-chip-text: #000000;
+
     }
 
 
@@ -52,6 +57,11 @@
       --glass-blur: 18px;
       --glass-shadow: 0 8px 32px rgba(0,0,0,0.55);
       --glass-highlight: rgba(255,255,255,0.06);
+
+      /* agent title chip — dark mode (dark glass surface, so it reads as part of the dark theme) */
+      --title-chip-bg: rgba(255,255,255,0.06);
+      --title-chip-border: rgba(255,255,255,0.14);
+      --title-chip-text: #f1f3f6;
     }
 
     body{
@@ -145,7 +155,7 @@
     #generateFB:hover { background-color: rgba(20,93,191,0.75) !important; }
     .btn:active { transform: scale(0.98); }
 
-    .grid { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    .grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
 
     .card {
       flex: 1; min-width: 450px;
@@ -154,7 +164,7 @@
       backdrop-filter: blur(var(--glass-blur)) saturate(160%);
       -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
       border-radius:var(--radius);
-      padding:16px;
+      padding:20px;
       box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-highlight);
       display: flex; flex-direction: column;
       position: relative;
@@ -242,7 +252,11 @@
       border-color: rgba(255,255,255,0.1);
     }
 
-    .section-title { margin-top:12px; margin-bottom:8px; font-weight:700; color:var(--muted); font-size:14px; }
+    .section-title {
+      margin-top:16px; margin-bottom:10px; font-weight:700; color:var(--muted); font-size:13px;
+      letter-spacing:.02em; text-transform:uppercase; padding-left:10px;
+      border-left:3px solid var(--accent); line-height:1.3;
+    }
 
     .summary { display: flex; gap: 20px; justify-content: center; align-items:center; margin-bottom:8px; }
     .summary .item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
@@ -277,6 +291,28 @@
 
     .item { display: flex; flex-direction: column; align-items: center; gap: 6px; }
     .logo { color: var(--logo-color); }
+
+    /* Agent title chip — uses the same glass tokens as the rest of the UI, so it shifts with light/dark mode */
+    .agent-title {
+      display:flex; align-items:center; gap:8px;
+      font-weight:700; font-size:15px; color: var(--title-chip-text);
+      background: var(--title-chip-bg);
+      border:1px solid var(--title-chip-border);
+      backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+      -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(160%);
+      padding:6px 14px; border-radius:999px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+      width: fit-content;
+    }
+    .agent-title span { color: var(--title-chip-text); }
+
+    .date-time-row {
+      display:flex; gap:15px; align-items:flex-end;
+      padding-bottom:16px; margin-bottom:4px;
+      border-bottom:1px solid var(--border);
+    }
+
+    .grid { align-items: start; }
 
     #wocasX, #wocasFB { height: 120px; min-height: 120px; resize: vertical; width: 100%; padding: 10px; box-sizing: border-box; }
     #clearBtn { margin-top: 12px; float: right; }
@@ -621,6 +657,11 @@ textarea {
   min-height: 120px;
 }
 
+/* Top Intents starts a bit shorter than the default textarea */
+#topIntentsX, #topIntentsFB {
+  min-height: 75px;
+}
+
 /* Compact summary inputs */
 .compact {
   width: 60px;
@@ -682,9 +723,10 @@ textarea::placeholder {
       <h1>Airyn Report Generator — X and Facebook</h1>
       <div class="controls">
         <button id="resetAll" class="btn glass-btn reset-btn" type="button">
-          <svg class="reset-icon" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M13.65 2.35A7.5 7.5 0 1 0 15.5 8"/>
-            <path d="M13.5 1v4h-4"/>
+          <svg class="reset-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"/>
+            <polyline points="1 20 1 14 7 14"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
           </svg>
           <span>Reset</span>
         </button>
@@ -715,16 +757,16 @@ textarea::placeholder {
         </div>
 
 <div class="agent-row">
-  <div style="font-weight:700; display:flex; align-items:center; gap:8px;">
-<svg class="logo" xmlns="http://www.w3.org/2000/svg" 
-     viewBox="0 0 18 18" width="26" height="26" fill="currentColor">
+  <div class="agent-title">
+    <svg class="logo-x" xmlns="http://www.w3.org/2000/svg" 
+     viewBox="0 0 18 18" width="20" height="20" fill="currentColor">
   <path d="M12.6 0h2.454l-5.36 6.142L16 16h-4.937l-3.867-5.07L2.772 16H.316l5.733-6.57L0 0h5.063l3.495 4.633L12.6 0zm-.86 14.713h1.359L4.354 1.25H2.896l8.844 13.463z"/>
 </svg>
-    Airyn X
+    <span>Airyn X</span>
   </div>
 </div>
 
-<div style="display: flex; gap: 15px; align-items: flex-end;">
+<div class="date-time-row">
     <div style="display: flex; flex-direction: column; flex: 1;">
         <label style="font-size: 14px; margin-bottom: 5px;">Date</label>
         <input id="dateX" type="date" value="2026-02-17" style="padding: 7px; font-size: 15px; border-radius: 8px; border: 1px solid #ccc;" />
@@ -735,22 +777,23 @@ textarea::placeholder {
     </div>
 </div>
 
-        <div class="section-title">Summary</div>
-        <div class="summary">
-          <div class="item">
-            <label>Human in the Loop</label>
-            <input id="humanLoopX" type="number" placeholder="0" class="compact" readonly value="" />
-          </div>
-          <div class="item">
-            <label>Auto Approved</label>
-            <input id="autoApprovedX" type="number" placeholder="0" class="compact" readonly value="" />
-          </div>
-          <div class="item">
-            <label>Off-Topic Category</label>
-            <input id="offTopicApprovedX" type="number" placeholder="0" class="compact" readonly value="" />
+        <div style="display:none;" aria-hidden="true">
+          <div class="section-title">Summary</div>
+          <div class="summary">
+            <div class="item">
+              <label>Human in the Loop</label>
+              <input id="humanLoopX" type="number" placeholder="0" class="compact" readonly value="" />
+            </div>
+            <div class="item">
+              <label>Auto Approved</label>
+              <input id="autoApprovedX" type="number" placeholder="0" class="compact" readonly value="" />
+            </div>
+            <div class="item">
+              <label>Off-Topic Category</label>
+              <input id="offTopicApprovedX" type="number" placeholder="0" class="compact" readonly value="" />
+            </div>
           </div>
         </div>
-
 
         <div class="section-title">TOTAL FOR ALL DAYS (manual count)</div>
         <div class="two-col">
@@ -810,10 +853,10 @@ textarea::placeholder {
         </div>
 
 <div class="agent-row">
-  <div style="font-weight:700; display:flex; align-items:center; gap:8px;">
+  <div class="agent-title">
     <!-- Inline SVG Facebook icon -->
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" 
-         width="26" height="26" fill="#1877F2">
+         width="20" height="20" fill="#1877F2">
       <path d="M22.675 0h-21.35C.597 0 0 .597 0 
                1.326v21.348C0 23.403.597 24 1.326 
                24h11.495v-9.294H9.691v-3.622h3.13V8.413c0-3.1 
@@ -824,11 +867,11 @@ textarea::placeholder {
                23.403 24 22.674V1.326C24 .597 23.403 
                0 22.675 0z"/>
     </svg>
+    <span>Airyn Facebook</span>
   </div>
-  <div style="font-weight:700">Airyn Facebook</div>
 </div>
 
-<div style="display: flex; gap: 15px; align-items: flex-end;">
+<div class="date-time-row">
     <div style="display: flex; flex-direction: column; flex: 1;">
         <label style="font-size: 14px; margin-bottom: 5px;">Date</label>
         <input id="dateFB" type="date" value="2026-02-17" style="padding: 7px; font-size: 15px;border-radius: 8px; border: 1px solid #ccc;" />
@@ -839,19 +882,21 @@ textarea::placeholder {
     </div>
 </div>
 
-        <div class="section-title">Summary</div>
-        <div class="summary">
-          <div class="item">
-            <label>Human in the Loop</label>
-            <input id="humanLoopFB" type="number" placeholder="0" class="compact" readonly value="" />
-          </div>
-          <div class="item">
-            <label>Auto Approved</label>
-            <input id="autoApprovedFB" type="number" placeholder="0" class="compact" readonly value="" />
-          </div>
-          <div class="item">
-            <label>Off-Topic Category</label>
-            <input id="offTopicApprovedFB" type="number" placeholder="0" class="compact" readonly value="" />
+        <div style="display:none;" aria-hidden="true">
+          <div class="section-title">Summary</div>
+          <div class="summary">
+            <div class="item">
+              <label>Human in the Loop</label>
+              <input id="humanLoopFB" type="number" placeholder="0" class="compact" readonly value="" />
+            </div>
+            <div class="item">
+              <label>Auto Approved</label>
+              <input id="autoApprovedFB" type="number" placeholder="0" class="compact" readonly value="" />
+            </div>
+            <div class="item">
+              <label>Off-Topic Category</label>
+              <input id="offTopicApprovedFB" type="number" placeholder="0" class="compact" readonly value="" />
+            </div>
           </div>
         </div>
 
@@ -1384,18 +1429,17 @@ document.getElementById("clearWocasFB")?.addEventListener("click", function () {
 <script>
 
 
-document.getElementById('copyBtn').addEventListener('click', function() {
+document.getElementById('copyBtn').addEventListener('click', async function() {
     const reportBox = document.getElementById('reportOutput');
     if (reportBox && reportBox.value.trim() !== "") {
-        // Copy the text
-        navigator.clipboard.writeText(reportBox.value).then(() => {
-            // Give feedback
-            const originalText = this.innerText;
-            this.innerText = "Copied!";
-            setTimeout(() => {
-                this.innerText = originalText;
-            }, 2000);
-        });
+        // Copy the text (first line + numbers bold on rich-text paste targets)
+        await copyReportRich(reportBox.value);
+        // Give feedback
+        const originalText = this.innerText;
+        this.innerText = "Copied!";
+        setTimeout(() => {
+            this.innerText = originalText;
+        }, 2000);
     } else {
         alert("Nothing to copy!");
     }
@@ -1589,6 +1633,112 @@ if (rawWocas.length === 0) {
 
 return lines.join('\n');
     }
+
+    // Build an HTML version of the report where the first line (the summary
+    // sentence, including its numbers) is bold, and the numbers in the
+    // "TOTAL FOR ALL DAYS" / "FOR CURRENT DATE" bullet lines are bold too,
+    // for rich-text paste targets.
+    function escapeHtmlForCopy(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+    }
+
+    function buildReportHtml(reportText) {
+      const rawLines = reportText.split('\n');
+      const lines = rawLines.map(escapeHtmlForCopy);
+
+      if (lines.length > 0) {
+        lines[0] = '<strong>' + lines[0] + '</strong>';
+      }
+
+      // Bold the trailing number on each bullet line between "TOTAL FOR ALL
+      // DAYS:" and "TOP INTENTS" — covers both the totals and the
+      // current-date subsection in between.
+      let inTotalsZone = false;
+      for (let i = 0; i < rawLines.length; i++) {
+        const trimmed = rawLines[i].trim();
+        if (trimmed === 'TOTAL FOR ALL DAYS:') {
+          inTotalsZone = true;
+          continue;
+        }
+        if (trimmed === 'TOP INTENTS') {
+          inTotalsZone = false;
+          continue;
+        }
+        if (inTotalsZone) {
+          lines[i] = lines[i].replace(/(-\s*)(\d+)(\s*)$/, '$1<strong>$2</strong>$3');
+        }
+      }
+
+      return '<div style="white-space:pre-wrap;">' + lines.join('<br>') + '</div>';
+    }
+
+    // Legacy fallback: select a hidden contenteditable holding the full HTML
+    // and use execCommand('copy'). This works even when the modern Clipboard
+    // API is blocked (e.g. the page opened from a local file rather than
+    // https://, which is a common reason navigator.clipboard silently fails).
+    function copyHtmlWithExecCommand(html, plainText) {
+      const container = document.createElement('div');
+      container.contentEditable = 'true';
+      container.style.position = 'fixed';
+      container.style.left = '-9999px';
+      container.style.top = '0';
+      container.style.whiteSpace = 'pre-wrap';
+      container.innerHTML = html;
+      document.body.appendChild(container);
+
+      let ok = false;
+      try {
+        const range = document.createRange();
+        range.selectNodeContents(container);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        ok = document.execCommand('copy');
+        selection.removeAllRanges();
+      } catch (e) {
+        ok = false;
+      }
+      document.body.removeChild(container);
+      return ok;
+    }
+
+    // Copy report to clipboard as both plain text and rich HTML, so the
+    // first line (and its numbers) pastes bold into rich-text targets,
+    // while plain-text targets still get the normal text. Tries the modern
+    // Clipboard API first, then falls back to a legacy copy method so the
+    // copy still works when the page isn't served over https.
+    async function copyReportRich(reportText) {
+      const html = buildReportHtml(reportText);
+
+      if (navigator.clipboard && window.ClipboardItem) {
+        try {
+          const item = new ClipboardItem({
+            'text/plain': new Blob([reportText], { type: 'text/plain' }),
+            'text/html': new Blob([html], { type: 'text/html' })
+          });
+          await navigator.clipboard.write([item]);
+          return true;
+        } catch (e) {
+          // fall through to the legacy method below
+        }
+      }
+
+      if (copyHtmlWithExecCommand(html, reportText)) {
+        return true;
+      }
+
+      try {
+        await navigator.clipboard.writeText(reportText);
+        return true;
+      } catch (e) {
+        // last resort: leave the full report in the textarea so the user
+        // can still select and copy it manually.
+        return false;
+      }
+    }
 	  
     // Validate numeric fields (allow empty)
     function showValidationError(message) {
@@ -1741,7 +1891,7 @@ return lines.join('\n');
       document.getElementById('reportOutput').value = report;
 
 try {
-  await navigator.clipboard.writeText(report);
+  await copyReportRich(report);
   
   // 1. Target the span specifically
   const label = document.getElementById('xText');
@@ -1806,7 +1956,7 @@ try {
       document.getElementById('reportOutput').value = report;
 
 try {
-  await navigator.clipboard.writeText(report);
+  await copyReportRich(report);
   
   // Target the SPAN, not the BUTTON
   const textElement = document.getElementById('fbText'); 
