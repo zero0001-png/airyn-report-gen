@@ -64,6 +64,10 @@
       --title-chip-text: #f1f3f6;
     }
 
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
     body{
       margin:0;
       font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
@@ -151,8 +155,6 @@
     }
     .btn.small:hover { color:#fff; background: rgba(183,0,0,0.75); border-color: var(--btn-hover-border); }
 
-    #generateX:hover { background-color: rgba(26,26,26,0.75) !important; border-color: #555 !important; }
-    #generateFB:hover { background-color: rgba(20,93,191,0.75) !important; }
     .btn:active { transform: scale(0.98); }
 
     .grid { display:grid; grid-template-columns:1fr 1fr; gap:22px; }
@@ -286,6 +288,7 @@
     @media (max-width:920px){ .grid { grid-template-columns:1fr; } input[type="number"] { width:100%; } .compact { width:100%; } }
 
     .hint { font-size:12px; color:var(--muted); margin-top:6px; }
+    .template-header { display:flex; align-items:center; gap:8px; margin-left:auto; }
     .footer { margin-top:12px; display:flex; justify-content:space-between; align-items:center; gap:12px; }
     .small { font-size:12px; color:var(--muted); }
 
@@ -318,14 +321,14 @@
     #clearBtn { margin-top: 12px; float: right; }
     #copyBtn { margin-top: 12px; margin-right: 10px; float: right; }
 
-    #copyTemplateBtn, #copyFindingsBtn {
+    #copyEscalationBtn, #copyTemplateBtn, #copyFindingsBtn {
       padding: 6px 12px; font-size: 13px; cursor: pointer; float: right;
       background: rgba(213,213,213,0.5);
       backdrop-filter: blur(8px);
       -webkit-backdrop-filter: blur(8px);
       color: #000; border:1px solid rgba(0,0,0,0.6);
     }
-    #copyTemplateBtn:hover, #copyFindingsBtn:hover { background: var(--accent); }	  
+    #copyEscalationBtn:hover, #copyTemplateBtn:hover, #copyFindingsBtn:hover { background: var(--accent); }	  
 
     /* ===== Premium glass controls (Reset / Theme toggle) ===== */
     .glass-btn {
@@ -559,6 +562,67 @@
     .btn.btn-fb:hover {
       background: linear-gradient(135deg, #145dbf, #0d4a9c);
       box-shadow: 0 8px 20px rgba(24,119,242,0.4);
+    }
+
+    .btn.btn-all {
+      position: relative;
+      overflow: hidden;
+      /* green border */
+      background: linear-gradient(135deg, #2f9e44, #1f7a34);
+      border: none;
+      padding: 3px;
+      border-radius: 12px;
+      box-shadow: 0 3px 8px rgba(47,158,68,0.18);
+      transition: box-shadow 0.13s ease-out;
+    }
+    .btn.btn-all .btn-all-inner {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      /* green button face, matches border by default */
+      background: linear-gradient(135deg, #2f9e44, #1f7a34);
+      border-radius: 9px;
+      padding: 8px 14px;
+      font-size: 14px;
+      transition: background 0.11s linear;
+    }
+    .btn.btn-all::before,
+    .btn.btn-all::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      transition: transform 0.14s cubic-bezier(0.2, 0, 0.2, 1);
+    }
+    /* hover: X-black wedge slides in from the left edge, across border + button */
+    .btn.btn-all::before {
+      background: #000;
+      clip-path: polygon(0 0, 60% 0, 40% 100%, 0 100%);
+      transform: translateX(-100%);
+    }
+    /* hover: Facebook-blue wedge slides in from the right edge, across border + button */
+    .btn.btn-all::after {
+      background: #1877F2;
+      clip-path: polygon(60% 0, 100% 0, 100% 100%, 40% 100%);
+      transform: translateX(100%);
+    }
+    .btn.btn-all:hover {
+      box-shadow: 0 4px 10px rgba(0,0,0,0.22), 0 4px 10px rgba(24,119,242,0.28);
+    }
+    /* button face turns transparent on hover so the sliding wedges show through it too */
+    .btn.btn-all:hover .btn-all-inner {
+      background: transparent;
+    }
+    .btn.btn-all:hover::before,
+    .btn.btn-all:hover::after {
+      /* both wedges travel inward from their side and meet in the middle */
+      transform: translateX(0);
     }
 
     .btn.small {
@@ -834,14 +898,6 @@ textarea::placeholder {
 
         <div class="footer">
           <div class="small">No New Cards after 6 hrs → Report to WFM for E-Solve ticket.</div>
-          <div>
-<button id="generateX" class="btn btn-x" type="button">
-    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="white" viewBox="0 0 16 16">
-        <path d="M12.6 0h2.454l-5.36 6.142L16 16h-4.937l-3.867-5.07L2.772 16H.316l5.733-6.57L0 0h5.063l3.495 4.633L12.6 0zm-.86 14.713h1.359L4.354 1.25H2.896l8.844 13.463z"/>
-    </svg>
-<span id="xText">Generate Report</span>
-</button>
-          </div>
         </div>
       </div>
 
@@ -943,20 +999,34 @@ textarea::placeholder {
 
         <div class="footer">
           <div class="small">No New Cards after 6 hrs → Report to WFM for E-Solve ticket.</div>
-          <div>
-<button id="generateFB" class="btn btn-fb" type="button">
-    <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" fill="white" viewBox="0 0 16 16">
-        <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951z"/>
-    </svg>
-    <span id="fbText">Generate Report</span>
-</button>
-          </div>
         </div>
       </div>
     </div>
 
+    <div style="display:flex;justify-content:center;margin-top:18px;">
+      <button id="generateAllBtn" class="btn btn-all" type="button">
+        <span class="btn-all-inner">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" width="14" height="14" fill="white">
+            <path d="M12.6 0h2.454l-5.36 6.142L16 16h-4.937l-3.867-5.07L2.772 16H.316l5.733-6.57L0 0h5.063l3.495 4.633L12.6 0zm-.86 14.713h1.359L4.354 1.25H2.896l8.844 13.463z"/>
+          </svg>
+          <span id="allText">Generate &amp; Copy Report</span>
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="14" height="14" fill="white">
+            <path d="M22.675 0h-21.35C.597 0 0 .597 0 
+                     1.326v21.348C0 23.403.597 24 1.326 
+                     24h11.495v-9.294H9.691v-3.622h3.13V8.413c0-3.1 
+                     1.893-4.788 4.659-4.788 1.325 0 
+                     2.463.099 2.795.143v3.24l-1.918.001c-1.504 
+                     0-1.796.715-1.796 1.763v2.313h3.587l-.467 
+                     3.622h-3.12V24h6.116C23.403 24 24 
+                     23.403 24 22.674V1.326C24 .597 23.403 
+                     0 22.675 0z"/>
+          </svg>
+        </span>
+      </button>
+    </div>
+
     <div class="card report-area" style="margin-top:18px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
         <div style="font-weight:700">Generated Report</div>
  	  <div class="template-header">
 		  <button id="copyEscalationBtn" class="btn ghost" type="button" style="margin-right: 8px;"> Escalation Template</button>
@@ -1649,16 +1719,24 @@ return lines.join('\n');
       const rawLines = reportText.split('\n');
       const lines = rawLines.map(escapeHtmlForCopy);
 
-      if (lines.length > 0) {
-        lines[0] = '<strong>' + lines[0] + '</strong>';
-      }
-
-      // Bold the trailing number on each bullet line between "TOTAL FOR ALL
-      // DAYS:" and "TOP INTENTS" — covers both the totals and the
+      // Bold each agent's summary line (e.g. "Airyn X as of ..." /
+      // "Airyn Facebook as of ...") and the divider line between reports,
+      // so both stand out (bold + thick) when pasted into rich-text targets.
+      // Also bold the trailing number on each bullet line between "TOTAL
+      // FOR ALL DAYS:" and "TOP INTENTS" — covers both the totals and the
       // current-date subsection in between.
       let inTotalsZone = false;
       for (let i = 0; i < rawLines.length; i++) {
         const trimmed = rawLines[i].trim();
+
+        if (/^Airyn .+ as of /.test(trimmed)) {
+          lines[i] = '<strong>' + lines[i] + '</strong>';
+          continue;
+        }
+        if (/^━+$/.test(trimmed)) {
+          lines[i] = '<strong style="letter-spacing:1px;">' + lines[i] + '</strong>';
+          continue;
+        }
         if (trimmed === 'TOTAL FOR ALL DAYS:') {
           inTotalsZone = true;
           continue;
@@ -1847,21 +1925,8 @@ return lines.join('\n');
       });
     }
 
-    // Generate for Airyn X
-    async function generateX() {
-      const numericIds = [
-        'pendingX','offTopicTotalX','multipleMentionX','approvedTotalX',
-        'offTopicDayX','failedSendX','approvedAgentX','autoSentX'
-      ];
-      const valid = validateNumeric(numericIds);
-      if (!valid.ok) {
-        showValidationError('Please enter a valid number in field: ' + valid.id);
-        return;
-      }
-      clearValidationError();
-
-      syncSummary('X');
-
+    // Build the Airyn X report text only (no copy/paint side effects).
+    function buildXReportText() {
       const agentName = 'Airyn X';
       const dateISO = document.getElementById('dateX').value;
       const timeRange = document.getElementById('timeX').value || '';
@@ -1886,45 +1951,11 @@ return lines.join('\n');
       const topIntents = document.getElementById('topIntentsX').value.trim();
       const wocas = document.getElementById('wocasX').value.trim();
 
-      const report = buildAgentReport(agentName, dateISO, timeRange, humanLoopVal, autoApprovedVal, offTopicApprovedVal, totals, selected, '', topIntents, wocas);
-
-      document.getElementById('reportOutput').value = report;
-
-try {
-  await copyReportRich(report);
-  
-  // 1. Target the span specifically
-  const label = document.getElementById('xText');
-  const prev = label.textContent;
-
-  // 2. Change the label text (the SVG remains untouched)
-  label.textContent = 'Copied ✓';
-
-  // 3. Reset after 1.2 seconds
-  setTimeout(() => { 
-    label.textContent = prev; 
-  }, 1200);
-
-} catch (err) {
-        // still show report even if copy fails
-      }
+      return buildAgentReport(agentName, dateISO, timeRange, humanLoopVal, autoApprovedVal, offTopicApprovedVal, totals, selected, '', topIntents, wocas);
     }
 
-    // Generate for Airyn Facebook
-    async function generateFB() {
-      const numericIds = [
-        'pendingFB','offTopicTotalFB','multipleMentionFB','approvedTotalFB',
-        'offTopicDayFB','failedSendFB','approvedAgentFB','autoSentFB','autoSentTotalFB'
-      ];
-      const valid = validateNumeric(numericIds);
-      if (!valid.ok) {
-        showValidationError('Please enter a valid number in field: ' + valid.id);
-        return;
-      }
-      clearValidationError();
-
-      syncSummary('FB');
-
+    // Build the Airyn Facebook report text only (no copy/paint side effects).
+    function buildFBReportText() {
       const agentName = 'Airyn Facebook';
       const dateISO = document.getElementById('dateFB').value;
       const timeRange = document.getElementById('timeFB').value || '';
@@ -1951,24 +1982,57 @@ try {
       const topIntents = document.getElementById('topIntentsFB').value.trim();
       const wocas = document.getElementById('wocasFB').value.trim();
 
-      const report = buildAgentReport(agentName, dateISO, timeRange, humanLoopVal, autoApprovedVal, offTopicApprovedVal, totals, selected, overallApproved, topIntents, wocas);
+      return buildAgentReport(agentName, dateISO, timeRange, humanLoopVal, autoApprovedVal, offTopicApprovedVal, totals, selected, overallApproved, topIntents, wocas);
+    }
 
-      document.getElementById('reportOutput').value = report;
+    // Single button: generate the combined Airyn X + Airyn Facebook report
+    // (separated by a divider line) and copy it to the clipboard in one click.
+    async function generateAllReports() {
+      const numericIdsX = [
+        'pendingX','offTopicTotalX','multipleMentionX','approvedTotalX',
+        'offTopicDayX','failedSendX','approvedAgentX','autoSentX'
+      ];
+      const validX = validateNumeric(numericIdsX);
+      if (!validX.ok) {
+        showValidationError('Please enter a valid number in field: ' + validX.id);
+        return;
+      }
 
-try {
-  await copyReportRich(report);
-  
-  // Target the SPAN, not the BUTTON
-  const textElement = document.getElementById('fbText'); 
-  const prev = textElement.textContent;
+      const numericIdsFB = [
+        'pendingFB','offTopicTotalFB','multipleMentionFB','approvedTotalFB',
+        'offTopicDayFB','failedSendFB','approvedAgentFB','autoSentFB','autoSentTotalFB'
+      ];
+      const validFB = validateNumeric(numericIdsFB);
+      if (!validFB.ok) {
+        showValidationError('Please enter a valid number in field: ' + validFB.id);
+        return;
+      }
 
-  textElement.textContent = 'Copied ✓';
-  
-  setTimeout(() => { 
-    textElement.textContent = prev; 
-  }, 1200);
-  
-} catch (err) {
+      clearValidationError();
+
+      syncSummary('X');
+      syncSummary('FB');
+
+      const reportX = buildXReportText();
+      const reportFB = buildFBReportText();
+
+      const separator = '\n \n' + '━'.repeat(40) + '\n \n';
+      const combined = reportX + separator + reportFB;
+
+      document.getElementById('reportOutput').value = combined;
+
+      try {
+        await copyReportRich(combined);
+
+        const label = document.getElementById('allText');
+        if (label) {
+          const prev = label.textContent;
+          label.textContent = 'Copied ✓';
+          setTimeout(() => {
+            label.textContent = prev;
+          }, 1200);
+        }
+      } catch (err) {
         // still show report even if copy fails
       }
     }
@@ -2049,9 +2113,8 @@ Reason: `;
     updateReportBox(template);
 });
 
-    // Hook up generate buttons
-    document.getElementById('generateX').addEventListener('click', generateX);
-    document.getElementById('generateFB').addEventListener('click', generateFB);
+    // Hook up the single generate-and-copy button
+    document.getElementById('generateAllBtn').addEventListener('click', generateAllReports);
 
     // Clear report and persisted editable fields
     document.getElementById('clearBtn').addEventListener('click', () => {
