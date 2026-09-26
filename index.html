@@ -191,7 +191,7 @@
 
     label { display:block; font-size:13px; color:var(--muted); margin-bottom:6px; font-weight:600; }
 
-    input[type="text"], input[type="date"], input[type="number"], textarea {
+    input[type="text"], input[type="date"], input[type="number"] {
       width:100%;
       padding:10px 12px;
       border-radius:10px;
@@ -207,6 +207,30 @@
       transition:border-color .15s, box-shadow .15s, background .15s;
     }
 
+    /* Textareas get a frosted-glass treatment, tuned lighter and less blurred
+       than cards/buttons so the page behind is still clearly visible through
+       them — more "see-through glass", less "frosted". Uses its own tokens
+       (scoped to textarea only) rather than the shared --glass-* variables,
+       so cards/buttons elsewhere are unaffected. */
+    textarea {
+      --ta-glass-bg: rgba(255,255,255,0.28);
+      --ta-glass-border: rgba(255,255,255,0.55);
+      --ta-glass-blur: 6px;
+      width:100%;
+      padding:10px 12px;
+      border-radius:10px;
+      border: 1px solid var(--ta-glass-border);
+      background: var(--ta-glass-bg);
+      backdrop-filter: blur(var(--ta-glass-blur)) saturate(180%);
+      -webkit-backdrop-filter: blur(var(--ta-glass-blur)) saturate(180%);
+      color: #1f2430;
+      font-size:14px;
+      font-weight: 500;
+      box-sizing:border-box;
+      box-shadow: var(--glass-shadow), inset 0 1px 0 var(--glass-highlight);
+      transition:border-color .15s, box-shadow .15s, background .15s;
+    }
+
     input[type="text"]::placeholder,
     textarea::placeholder {
       color: #9aa1ad;
@@ -215,12 +239,17 @@
 
     body.dark input[type="text"],
     body.dark input[type="date"],
-    body.dark input[type="number"],
-    body.dark textarea {
+    body.dark input[type="number"] {
       background: rgba(0,0,0,0.35);
       border-color: rgba(255,255,255,0.14);
       color: #f1f3f6;
       box-shadow: inset 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    body.dark textarea {
+      --ta-glass-bg: rgba(20,22,23,0.28);
+      --ta-glass-border: rgba(255,255,255,0.16);
+      color: #f1f3f6;
     }
 
     body.dark input::placeholder,
@@ -228,16 +257,26 @@
       color: #7b8290;
     }
 
-    input:focus, textarea:focus {
+    input:focus {
       outline: none;
       border-color: var(--accent);
       box-shadow: 0 0 0 3px rgba(47,158,68,0.18), inset 0 1px 2px rgba(0,0,0,0.04);
       background: rgba(255,255,255,0.95);
     }
 
-    body.dark input:focus, body.dark textarea:focus {
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(47,158,68,0.18), var(--glass-shadow), inset 0 1px 0 var(--glass-highlight);
+    }
+
+    body.dark input:focus {
       box-shadow: 0 0 0 3px rgba(87,184,106,0.25), inset 0 1px 2px rgba(0,0,0,0.3);
       background: rgba(0,0,0,0.45);
+    }
+
+    body.dark textarea:focus {
+      box-shadow: 0 0 0 3px rgba(87,184,106,0.25), var(--glass-shadow), inset 0 1px 0 var(--glass-highlight);
     }
 
     /* readonly summary boxes stay visually "locked" but still legible */
@@ -247,6 +286,8 @@
       border-color: rgba(0,0,0,0.1);
       cursor: not-allowed;
       box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
     }
     body.dark input[readonly], body.dark textarea[readonly] {
       background: rgba(255,255,255,0.06);
@@ -343,10 +384,22 @@
     @keyframes modalFadeIn { from { opacity:0; } to { opacity:1; } }
 
     .modal-box {
-      width: 100%; max-width: 560px; max-height: 85vh;
+      width: 100%; max-width: 960px; max-height: 85vh;
       display: flex; flex-direction: column;
       margin: 0; overflow: visible;
       animation: modalPopIn .18s ease;
+      /* Lighter, less-blurred glass than the shared .card token: more of the
+         page shows through, less frosting. Title text still stays legible
+         via --title-chip-text below, so opacity can stay low. Scoped to
+         this box only, so .card elsewhere on the page is unaffected. */
+      --glass-bg: rgba(255,255,255,0.30);
+      --glass-border: rgba(255,255,255,0.55);
+      backdrop-filter: blur(7px) saturate(180%);
+      -webkit-backdrop-filter: blur(7px) saturate(180%);
+    }
+    body.dark .modal-box {
+      --glass-bg: rgba(20,22,23,0.30);
+      --glass-border: rgba(255,255,255,0.16);
     }
     @keyframes modalPopIn {
       from { opacity:0; transform: translateY(8px) scale(0.98); }
@@ -356,6 +409,17 @@
     .modal-header {
       display:flex; align-items:center; justify-content:space-between;
       gap:10px; margin-bottom:12px;
+    }
+
+    .modal-header .modal-title {
+      font-weight:700; font-size:15px;
+      /* Same token the agent-title chip uses for label text over glass —
+         guaranteed contrast in both themes, unlike --muted which was
+         tuned for text sitting directly on the page background. A soft
+         shadow keeps it readable now that the box behind it is more
+         see-through and less frosted. */
+      color: var(--title-chip-text);
+      text-shadow: 0 1px 2px rgba(0,0,0,0.10);
     }
 
     .modal-textarea {
@@ -1088,7 +1152,7 @@ textarea::placeholder {
   <div id="templateModalOverlay" class="modal-overlay" style="display:none;">
     <div class="modal-box card">
       <div class="modal-header">
-        <div id="templateModalTitle" style="font-weight:700; font-size:15px;">Template</div>
+        <div id="templateModalTitle" class="modal-title">Template</div>
         <button id="templateModalClose" class="btn small ghost" type="button" aria-label="Close">✕</button>
       </div>
       <textarea id="templateModalTextarea" class="modal-textarea"></textarea>
@@ -1512,36 +1576,39 @@ function getTopOverallIntents(batchInput) {
 
 
 // =========================
+// TOP INTENTS <-> WOCAS AUTO SYNC
+// =========================
+// Single source of truth: Top Intents always mirrors WOCAS. Whenever WOCAS
+// has no data, Top Intents is auto-cleared alongside it. Call this any time
+// WOCAS content changes (typing, manual clear, scheduled auto-clear, or
+// restoring persisted values on load) so the two never drift out of sync.
+function syncTopIntentsFromWocas(suffix) {
+  const wocasEl = document.getElementById('wocas' + suffix);
+  const topIntentsEl = document.getElementById('topIntents' + suffix);
+  if (!wocasEl || !topIntentsEl) return;
+
+  const raw = wocasEl.value;
+  if (!raw || !raw.trim()) {
+    topIntentsEl.value = '';
+    try { localStorage.removeItem('persist_topIntents' + suffix); } catch (e) { /* ignore */ }
+    return;
+  }
+
+  const topIntents = getTopOverallIntents(raw);
+  topIntentsEl.value = topIntents.length ? topIntents.join('\n') : '';
+  try { localStorage.setItem('persist_topIntents' + suffix, topIntentsEl.value); } catch (e) { /* ignore */ }
+}
+
+// =========================
 // INPUT LISTENERS
 // =========================
 
 document.getElementById("wocasX")?.addEventListener("input", function () {
-  const topIntents = getTopOverallIntents(this.value);
-  document.getElementById("topIntentsX").value =
-    topIntents.length
-      ? topIntents.join("\n")
-      : "";
+  syncTopIntentsFromWocas('X');
 });
-
-
-document.getElementById("clearWocasX")?.addEventListener("click", function () {
-  document.getElementById("wocasX").value = "";
-  document.getElementById("topIntentsX").value = "";
-});
-
 
 document.getElementById("wocasFB")?.addEventListener("input", function () {
-  const topIntents = getTopOverallIntents(this.value);
-  document.getElementById("topIntentsFB").value =
-    topIntents.length
-      ? topIntents.join("\n")
-      : "";
-});
-
-
-document.getElementById("clearWocasFB")?.addEventListener("click", function () {
-  document.getElementById("wocasFB").value = "";
-  document.getElementById("topIntentsFB").value = "";
+  syncTopIntentsFromWocas('FB');
 });
 
 </script>
@@ -1777,11 +1844,25 @@ return lines.join('\n');
       // Also bold the trailing number on each bullet line between "TOTAL
       // FOR ALL DAYS:" and "TOP INTENTS" — covers both the totals and the
       // current-date subsection in between.
+      //
+      // The Findings Template has its own header ("Findings as of ... |
+      // <date>") and "__ cases created in Salesforce" line, which get
+      // bolded whole; its category bullets (e.g. "• Billing/Aftersales
+      // Issues - 1") aren't inside a "TOTAL FOR ALL DAYS" zone, so their
+      // trailing numbers are bolded via a separate bullet-line check below.
       let inTotalsZone = false;
       for (let i = 0; i < rawLines.length; i++) {
         const trimmed = rawLines[i].trim();
 
         if (/^Airyn .+ as of /.test(trimmed)) {
+          lines[i] = '<strong>' + lines[i] + '</strong>';
+          continue;
+        }
+        if (/^Findings as of .+\|.+$/.test(trimmed)) {
+          lines[i] = '<strong>' + lines[i] + '</strong>';
+          continue;
+        }
+        if (/cases created in Salesforce/i.test(trimmed)) {
           lines[i] = '<strong>' + lines[i] + '</strong>';
           continue;
         }
@@ -1799,39 +1880,54 @@ return lines.join('\n');
         }
         if (inTotalsZone) {
           lines[i] = lines[i].replace(/(-\s*)(\d+)(\s*)$/, '$1<strong>$2</strong>$3');
+          continue;
+        }
+        if (/^[•·]/.test(trimmed)) {
+          lines[i] = lines[i].replace(/(-\s*)(\d+)(\s*)$/, '$1<strong>$2</strong>$3');
         }
       }
 
-      return '<div style="white-space:pre-wrap;">' + lines.join('<br>') + '</div>';
+      // Explicit color/background resets on every element, so Teams/Word/
+      // Outlook can't inherit a stray background (e.g. a system accent-color
+      // text-selection highlight some browsers bake into copied HTML) or a
+      // stray text color from the page behind this hidden copy buffer.
+      return '<div style="white-space:pre-wrap; background:transparent; color:#000;">' + lines.join('<br>') + '</div>';
     }
 
-    // Legacy fallback: select a hidden contenteditable holding the full HTML
-    // and use execCommand('copy'). This works even when the modern Clipboard
-    // API is blocked (e.g. the page opened from a local file rather than
-    // https://, which is a common reason navigator.clipboard silently fails).
+    // Legacy fallback for when the modern Clipboard API is blocked (e.g. the
+    // page opened from a local file rather than https://, which is a common
+    // reason navigator.clipboard silently fails).
+    //
+    // The previous version of this fallback selected a hidden contenteditable
+    // holding the HTML and ran execCommand('copy') on that selection. Some
+    // Chromium builds bake the *rendered* text-selection color (which follows
+    // the OS/browser accent color) into the copied HTML as an inline
+    // background whenever a real on-page selection is involved — that's what
+    // showed up as a solid highlight behind every line when pasted into
+    // Teams/Word/Outlook, and a CSS ::selection override wasn't enough to
+    // suppress it.
+    //
+    // This version avoids that entirely: instead of selecting anything, it
+    // intercepts the browser's 'copy' event and supplies the clipboard data
+    // directly (both text/plain and text/html), then triggers that event via
+    // execCommand('copy'). No text is ever rendered/selected on screen, so
+    // there's no selection color for the browser to capture.
     function copyHtmlWithExecCommand(html, plainText) {
-      const container = document.createElement('div');
-      container.contentEditable = 'true';
-      container.style.position = 'fixed';
-      container.style.left = '-9999px';
-      container.style.top = '0';
-      container.style.whiteSpace = 'pre-wrap';
-      container.innerHTML = html;
-      document.body.appendChild(container);
+      function setClipboardData(e) {
+        e.clipboardData.setData('text/plain', plainText);
+        e.clipboardData.setData('text/html', html);
+        e.preventDefault();
+      }
 
+      document.addEventListener('copy', setClipboardData);
       let ok = false;
       try {
-        const range = document.createRange();
-        range.selectNodeContents(container);
-        const selection = window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
         ok = document.execCommand('copy');
-        selection.removeAllRanges();
       } catch (e) {
         ok = false;
+      } finally {
+        document.removeEventListener('copy', setClipboardData);
       }
-      document.body.removeChild(container);
       return ok;
     }
 
@@ -2134,7 +2230,11 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Copy the modal's (possibly edited) content to the clipboard
+// Copy the modal's (possibly edited) content to the clipboard as both
+// plain text and rich HTML, so the "Findings as of ... | <date>" line,
+// the "cases created in Salesforce" line, and each bullet's trailing
+// number paste bold into rich-text targets (Word, Outlook, Teams), while
+// plain-text targets still get the normal text.
 document.getElementById('templateModalCopy').addEventListener('click', async function() {
     const textarea = document.getElementById('templateModalTextarea');
     const hint = document.getElementById('templateModalHint');
@@ -2404,6 +2504,8 @@ Reason: `;
       } catch (e) {
         // ignore
       }
+      // WOCAS is now empty — auto-clear Top Intents to keep the two in sync.
+      syncTopIntentsFromWocas(suffix);
       const btn = document.getElementById('clearWocas' + suffix);
       if (btn) {
         const prev = btn.textContent;
@@ -2523,6 +2625,12 @@ scheduleNext1205();
       ];
 
       persistFields(editablePersistIds);
+
+      // Re-sync Top Intents from WOCAS now that persisted values are restored,
+      // so a WOCAS that was empty on last save (or edited outside the app)
+      // doesn't leave a stale Top Intents value behind.
+      syncTopIntentsFromWocas('X');
+      syncTopIntentsFromWocas('FB');
 
       // Ensure summary fields reflect any restored values
       syncSummary('X');
