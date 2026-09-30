@@ -1641,20 +1641,31 @@ document.getElementById('copyBtn').addEventListener('click', async function() {
   const autoSentInput = document.getElementById('autoSentTotalFB');
 
   function calculateAutoSent() {
-    // Get values as numbers (default to 0 if empty)
-    const approved = parseFloat(approvedInput.value) || 0;
-    const overall = parseFloat(overallInput.value) || 0;
-
-    // Perform the math: Overall - Approved
-    const result = overall - approved;
+    // Leave the box empty (shows "AUTO") until at least one source field has data
+    let result = '';
+    if (approvedInput.value !== '' || overallInput.value !== '') {
+      const approved = parseFloat(approvedInput.value) || 0;
+      const overall = parseFloat(overallInput.value) || 0;
+      // Perform the math: Overall - Approved
+      result = overall - approved;
+    }
 
     // Update the Auto-sent box
     autoSentInput.value = result;
+
+    // Script-set values don't fire 'input', so save the computed value ourselves
+    // so it survives a reload.
+    try {
+      localStorage.setItem('persist_autoSentTotalFB', String(result));
+    } catch (e) { /* ignore */ }
   }
 
-  // Listen for typing/changes in the other two boxes
+  // Keep Auto-sent in sync with the two boxes it depends on
   approvedInput.addEventListener('input', calculateAutoSent);
   overallInput.addEventListener('input', calculateAutoSent);
+  // 'change' also covers autofill / spinner / paste edge cases
+  approvedInput.addEventListener('change', calculateAutoSent);
+  overallInput.addEventListener('change', calculateAutoSent);
 </script>
 
 
@@ -2491,11 +2502,11 @@ Reason: `;
     function scheduleNextWocasClear() {
       const now = new Date();
 
-      // target time: next xx:30:00
+
       let next = new Date();
       next.setMinutes(30, 0, 0);
 
-      // if xx:30 already passed this hour, schedule for next hour
+
       if (now >= next) {
         next.setHours(next.getHours() + 1);
       }
@@ -2504,13 +2515,13 @@ Reason: `;
 
       wocasAutoClearId = setTimeout(() => {
         autoClearWocasNow();
-        scheduleNextWocasClear(); // reschedule for the following hour
+        scheduleNextWocasClear(); 
       }, delay);
     }
 
-    // Initialize
+
     window.addEventListener('DOMContentLoaded', () => {
-      // Restore theme from localStorage
+
       try {
         const saved = localStorage.getItem(THEME_KEY);
         applyTheme(saved === 'dark' ? 'dark' : 'light');
@@ -2528,7 +2539,7 @@ Reason: `;
       syncSummary('X');
       syncSummary('FB');
 
-      // Auto-update date fields once on load (dates are NOT persisted)
+
       const todayISO = getTodayISO();
       const dateX = document.getElementById('dateX');
       const dateFB = document.getElementById('dateFB');
@@ -2538,11 +2549,10 @@ Reason: `;
 	function scheduleNext1205() {
   const now = new Date();
 
-  // target time: 12:05 today
   let next = new Date();
   next.setHours(0, 5, 0, 0);
 
-  // if 12:05 already passed today, schedule for tomorrow
+
   if (now >= next) {
     next.setDate(next.getDate() + 1);
   }
@@ -2551,39 +2561,30 @@ Reason: `;
 
   setTimeout(() => {
     updateDates();
-    scheduleNext1205(); // reschedule for next day
+    scheduleNext1205(); 
   }, delay);
 }
 
 scheduleNext1205();
 
-		      // Start the manager aligned to minute boundaries; manager will start/stop the 3-min worker between :40-:59
       startManagerAligned();
-
-      // Start hourly desktop notification check at HH:55
       startHourlyReminderService();
-
-      // Start auto-clear of WOCAS fields at :30 past every hour
       scheduleNextWocasClear();
 
-      // Persist editable fields so numbers/text survive reloads.
-      // NOTE: dateX/dateFB and timeX/timeFB are intentionally excluded so auto date/time behavior remains reliable.
+
       const editablePersistIds = [
-        // Airyn X totals & selected
+
         'pendingX','offTopicTotalX','multipleMentionX','approvedTotalX',
         'offTopicDayX','failedSendX','approvedAgentX','autoSentX',
-        // Airyn FB totals & selected
+
         'pendingFB','offTopicTotalFB','multipleMentionFB','approvedTotalFB',
         'autoSentTotalFB','offTopicDayFB','failedSendFB','approvedAgentFB','autoSentFB',
-        // Other editable fields (time fields intentionally excluded)
+
         'overallApprovedFB','topIntentsX','topIntentsFB','wocasX','wocasFB'
       ];
 
       persistFields(editablePersistIds);
-
-      // Re-sync Top Intents from WOCAS now that persisted values are restored,
-      // so a WOCAS that was empty on last save (or edited outside the app)
-      // doesn't leave a stale Top Intents value behind.
+      calculateAutoSent();
       syncTopIntentsFromWocas('X');
       syncTopIntentsFromWocas('FB');
 
