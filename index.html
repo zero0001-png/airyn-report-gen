@@ -1823,10 +1823,7 @@ if (rawWocas.length === 0) {
 return lines.join('\n');
     }
 
-    // Build an HTML version of the report where the first line (the summary
-    // sentence, including its numbers) is bold, and the numbers in the
-    // "TOTAL FOR ALL DAYS" / "FOR CURRENT DATE" bullet lines are bold too,
-    // for rich-text paste targets.
+
     function escapeHtmlForCopy(str) {
       return String(str)
         .replace(/&/g, '&amp;')
@@ -1838,18 +1835,7 @@ return lines.join('\n');
       const rawLines = reportText.split('\n');
       const lines = rawLines.map(escapeHtmlForCopy);
 
-      // Bold each agent's summary line (e.g. "Airyn X as of ..." /
-      // "Airyn Facebook as of ...") and the divider line between reports,
-      // so both stand out (bold + thick) when pasted into rich-text targets.
-      // Also bold the trailing number on each bullet line between "TOTAL
-      // FOR ALL DAYS:" and "TOP INTENTS" — covers both the totals and the
-      // current-date subsection in between.
-      //
-      // The Findings Template has its own header ("Findings as of ... |
-      // <date>") and "__ cases created in Salesforce" line, which get
-      // bolded whole; its category bullets (e.g. "• Billing/Aftersales
-      // Issues - 1") aren't inside a "TOTAL FOR ALL DAYS" zone, so their
-      // trailing numbers are bolded via a separate bullet-line check below.
+
       let inTotalsZone = false;
       for (let i = 0; i < rawLines.length; i++) {
         const trimmed = rawLines[i].trim();
@@ -1887,31 +1873,9 @@ return lines.join('\n');
         }
       }
 
-      // Explicit color/background resets on every element, so Teams/Word/
-      // Outlook can't inherit a stray background (e.g. a system accent-color
-      // text-selection highlight some browsers bake into copied HTML) or a
-      // stray text color from the page behind this hidden copy buffer.
       return '<div style="white-space:pre-wrap; background:transparent; color:#000;">' + lines.join('<br>') + '</div>';
     }
 
-    // Legacy fallback for when the modern Clipboard API is blocked (e.g. the
-    // page opened from a local file rather than https://, which is a common
-    // reason navigator.clipboard silently fails).
-    //
-    // The previous version of this fallback selected a hidden contenteditable
-    // holding the HTML and ran execCommand('copy') on that selection. Some
-    // Chromium builds bake the *rendered* text-selection color (which follows
-    // the OS/browser accent color) into the copied HTML as an inline
-    // background whenever a real on-page selection is involved — that's what
-    // showed up as a solid highlight behind every line when pasted into
-    // Teams/Word/Outlook, and a CSS ::selection override wasn't enough to
-    // suppress it.
-    //
-    // This version avoids that entirely: instead of selecting anything, it
-    // intercepts the browser's 'copy' event and supplies the clipboard data
-    // directly (both text/plain and text/html), then triggers that event via
-    // execCommand('copy'). No text is ever rendered/selected on screen, so
-    // there's no selection color for the browser to capture.
     function copyHtmlWithExecCommand(html, plainText) {
       function setClipboardData(e) {
         e.clipboardData.setData('text/plain', plainText);
@@ -1931,11 +1895,7 @@ return lines.join('\n');
       return ok;
     }
 
-    // Copy report to clipboard as both plain text and rich HTML, so the
-    // first line (and its numbers) pastes bold into rich-text targets,
-    // while plain-text targets still get the normal text. Tries the modern
-    // Clipboard API first, then falls back to a legacy copy method so the
-    // copy still works when the page isn't served over https.
+
     async function copyReportRich(reportText) {
       const html = buildReportHtml(reportText);
 
@@ -2164,7 +2124,7 @@ return lines.join('\n');
       const reportX = buildXReportText();
       const reportFB = buildFBReportText();
 
-      const separator = '\n \n' + '━'.repeat(40) + '\n \n';
+      const separator = '\n \n' + '━'.repeat(25) + '\n \n';
       const combined = reportX + separator + reportFB;
 
       document.getElementById('reportOutput').value = combined;
@@ -2230,11 +2190,7 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Copy the modal's (possibly edited) content to the clipboard as both
-// plain text and rich HTML, so the "Findings as of ... | <date>" line,
-// the "cases created in Salesforce" line, and each bullet's trailing
-// number paste bold into rich-text targets (Word, Outlook, Teams), while
-// plain-text targets still get the normal text.
+
 document.getElementById('templateModalCopy').addEventListener('click', async function() {
     const textarea = document.getElementById('templateModalTextarea');
     const hint = document.getElementById('templateModalHint');
@@ -2255,8 +2211,7 @@ document.getElementById('templateModalCopy').addEventListener('click', async fun
 
 // PUSO TEMPLATE (Callback Template) BUTTON — opens in popup modal
 document.getElementById('copyTemplateBtn').addEventListener('click', function() {
-    const template = `
-Customer Name: 
+    const template = `Customer Name: 
 Customer Account: 
 Tel #: 
 FT/SO #: 
