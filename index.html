@@ -667,14 +667,24 @@
     .btn.btn-all {
       position: relative;
       overflow: hidden;
-      /* green border */
-      background: linear-gradient(135deg, #2f9e44, #1f7a34);
-      border: none;
+      /* colorless glass frame */
+      background: rgba(255,255,255,0.28);
+      border: 1px solid rgba(255,255,255,0.55);
+      backdrop-filter: blur(12px) saturate(140%);
+      -webkit-backdrop-filter: blur(12px) saturate(140%);
+      color: var(--muted);
       padding: 3px;
       border-radius: 12px;
-      box-shadow: 0 3px 8px rgba(47,158,68,0.18);
-      transition: box-shadow 0.13s ease-out;
+      box-shadow: 0 4px 16px rgba(20,20,40,0.12), inset 0 1px 0 rgba(255,255,255,0.5);
+      transition: box-shadow 0.13s ease-out, color 0.11s linear;
     }
+    body.dark .btn.btn-all {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.16);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.08);
+    }
+    /* icons follow the text color so they stay visible on glass */
+    .btn.btn-all svg { fill: currentColor; }
     .btn.btn-all .btn-all-inner {
       position: relative;
       z-index: 2;
@@ -682,8 +692,8 @@
       align-items: center;
       justify-content: center;
       gap: 8px;
-      /* green button face, matches border by default */
-      background: linear-gradient(135deg, #2f9e44, #1f7a34);
+      /* clear glass face */
+      background: rgba(255,255,255,0.12);
       border-radius: 9px;
       padding: 8px 14px;
       font-size: 14px;
@@ -713,6 +723,7 @@
       transform: translateX(100%);
     }
     .btn.btn-all:hover {
+      color: #fff; /* white text/icons over the black + blue wedges */
       box-shadow: 0 4px 10px rgba(0,0,0,0.22), 0 4px 10px rgba(24,119,242,0.28);
     }
     /* button face turns transparent on hover so the sliding wedges show through it too */
@@ -941,24 +952,6 @@ textarea::placeholder {
     </div>
 </div>
 
-        <div style="display:none;" aria-hidden="true">
-          <div class="section-title">Summary</div>
-          <div class="summary">
-            <div class="item">
-              <label>Human in the Loop</label>
-              <input id="humanLoopX" type="number" placeholder="0" class="compact" readonly value="" />
-            </div>
-            <div class="item">
-              <label>Auto Approved</label>
-              <input id="autoApprovedX" type="number" placeholder="0" class="compact" readonly value="" />
-            </div>
-            <div class="item">
-              <label>Off-Topic Category</label>
-              <input id="offTopicApprovedX" type="number" placeholder="0" class="compact" readonly value="" />
-            </div>
-          </div>
-        </div>
-
         <div class="section-title">TOTAL FOR ALL DAYS (manual count)</div>
         <div class="two-col">
           <div class="col"><label>Pending</label><input id="pendingX" type="number" placeholder="0" value="0" /></div>
@@ -1037,24 +1030,6 @@ textarea::placeholder {
         <input id="timeFB" type="text" value="0:00 PM to 0:00 PM" style="padding: 7px; font-size: 15px;border-radius: 8px; border: 1px solid #ccc;" />
     </div>
 </div>
-
-        <div style="display:none;" aria-hidden="true">
-          <div class="section-title">Summary</div>
-          <div class="summary">
-            <div class="item">
-              <label>Human in the Loop</label>
-              <input id="humanLoopFB" type="number" placeholder="0" class="compact" readonly value="" />
-            </div>
-            <div class="item">
-              <label>Auto Approved</label>
-              <input id="autoApprovedFB" type="number" placeholder="0" class="compact" readonly value="" />
-            </div>
-            <div class="item">
-              <label>Off-Topic Category</label>
-              <input id="offTopicApprovedFB" type="number" placeholder="0" class="compact" readonly value="" />
-            </div>
-          </div>
-        </div>
 
         <div class="section-title">TOTAL FOR ALL DAYS (manual count)</div>
         <div class="two-col-fb">
@@ -1973,41 +1948,6 @@ return lines.join('\n');
       return { ok:true };
     }
 
-    // Sync function for a given suffix ('X' or 'FB')
-    function syncSummary(suffix) {
-      const approvedAgent = document.getElementById('approvedAgent' + suffix);
-      const autoSent = document.getElementById('autoSent' + suffix);
-      const offTopicDay = document.getElementById('offTopicDay' + suffix);
-
-      const humanLoop = document.getElementById('humanLoop' + suffix);
-      const autoApproved = document.getElementById('autoApproved' + suffix);
-      const offTopicApproved = document.getElementById('offTopicApproved' + suffix);
-
-      if (!humanLoop || !autoApproved || !offTopicApproved) return;
-
-      if (approvedAgent && approvedAgent.value !== '') {
-        humanLoop.value = approvedAgent.value;
-      }
-      if (autoSent && autoSent.value !== '') {
-        autoApproved.value = autoSent.value;
-      }
-      if (offTopicDay && offTopicDay.value !== '') {
-        offTopicApproved.value = offTopicDay.value;
-      }
-    }
-
-    // Attach listeners to keep summary live
-    function attachLiveSync(suffix) {
-      const ids = ['approvedAgent','autoSent','offTopicDay'].map(k => k + suffix);
-      ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.addEventListener('input', () => {
-          syncSummary(suffix);
-        });
-      });
-    }
-
     // Persistence helpers for editable fields
     function persistInput(id) {
       const el = document.getElementById(id);
@@ -2049,9 +1989,9 @@ return lines.join('\n');
       const agentName = 'Airyn X';
       const dateISO = document.getElementById('dateX').value;
       const timeRange = document.getElementById('timeX').value || '';
-      const humanLoopVal = document.getElementById('humanLoopX').value || '0';
-      const autoApprovedVal = document.getElementById('autoApprovedX').value || '0';
-      const offTopicApprovedVal = document.getElementById('offTopicApprovedX').value || '0';
+      const humanLoopVal = document.getElementById('approvedAgentX').value || '0';
+      const autoApprovedVal = document.getElementById('autoSentX').value || '0';
+      const offTopicApprovedVal = document.getElementById('offTopicDayX').value || '0';
 
       const totals = {
         pending: document.getElementById('pendingX').value || '0',
@@ -2078,9 +2018,9 @@ return lines.join('\n');
       const agentName = 'Airyn Facebook';
       const dateISO = document.getElementById('dateFB').value;
       const timeRange = document.getElementById('timeFB').value || '';
-      const humanLoopVal = document.getElementById('humanLoopFB').value || '0';
-      const autoApprovedVal = document.getElementById('autoApprovedFB').value || '0';
-      const offTopicApprovedVal = document.getElementById('offTopicApprovedFB').value || '0';
+      const humanLoopVal = document.getElementById('approvedAgentFB').value || '0';
+      const autoApprovedVal = document.getElementById('autoSentFB').value || '0';
+      const offTopicApprovedVal = document.getElementById('offTopicDayFB').value || '0';
 
       const totals = {
         pending: document.getElementById('pendingFB').value || '0',
@@ -2129,8 +2069,6 @@ return lines.join('\n');
 
       clearValidationError();
 
-      syncSummary('X');
-      syncSummary('FB');
 
       const reportX = buildXReportText();
       const reportFB = buildFBReportText();
@@ -2307,9 +2245,6 @@ Reason: `;
     document.getElementById('clearBtn').addEventListener('click', () => {
       document.getElementById('reportOutput').value = '';
 
-      // ensure summaries reflect cleared values
-      syncSummary('X');
-      syncSummary('FB');
 
       // Briefly show confirmation, then revert button to its original state
       const btn = document.getElementById('clearBtn');
@@ -2529,15 +2464,11 @@ Reason: `;
         applyTheme('light');
       }
 
-      attachLiveSync('X');
-      attachLiveSync('FB');
 
       document.querySelectorAll('input[readonly], textarea[readonly]').forEach(el => {
         el.setAttribute('tabindex', '-1');
       });
 
-      syncSummary('X');
-      syncSummary('FB');
 
 
       const todayISO = getTodayISO();
@@ -2546,26 +2477,88 @@ Reason: `;
       if (dateX) dateX.value = todayISO;
       if (dateFB) dateFB.value = todayISO;
 
-	function scheduleNext1205() {
-  const now = new Date();
+      // ===== DAILY AUTO-RESET AT 12:05 AM (whenever the date changes) =====
+      // The "report day" rolls over at 12:05 AM, not midnight, so 12:00-12:04 AM
+      // still counts as the previous day. The last day that was reset is stored
+      // in localStorage, so the reset also fires if the page was closed, asleep,
+      // or throttled at 12:05 and is opened/refocused later.
+      const LAST_RESET_KEY = 'lastResetDay';
 
-  let next = new Date();
-  next.setHours(0, 5, 0, 0);
+      function getReportDayISO() {
+        const d = new Date(Date.now() - 5 * 60 * 1000); // shift back 5 min
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+      }
 
+      function resetEverything() {
+        resetPlatformData('X');
+        resetPlatformData('FB');
 
-  if (now >= next) {
-    next.setDate(next.getDate() + 1);
-  }
+        ['topIntentsX', 'topIntentsFB'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.value = '';
+        });
+        clearPersistedFields(['topIntentsX', 'topIntentsFB']);
 
-  const delay = next - now;
+        const report = document.getElementById('reportOutput');
+        if (report) report.value = '';
 
-  setTimeout(() => {
-    updateDates();
-    scheduleNext1205(); 
-  }, delay);
-}
+        ['wocasClearedX', 'wocasClearedFB'].forEach(id => {
+          const el = document.getElementById(id);
+          if (el) el.textContent = '';
+        });
 
-scheduleNext1205();
+        // Refresh dependent/computed fields
+        calculateAutoSent();
+        syncTopIntentsFromWocas('X');
+        syncTopIntentsFromWocas('FB');
+        updateDates();
+      }
+
+      function checkDailyReset() {
+        const today = getReportDayISO();
+        let last = null;
+        try { last = localStorage.getItem(LAST_RESET_KEY); } catch (e) { /* ignore */ }
+
+        if (last === null) {
+          // First run: just record today, don't wipe anything
+          try { localStorage.setItem(LAST_RESET_KEY, today); } catch (e) { /* ignore */ }
+          return;
+        }
+        if (last !== today) {
+          resetEverything();
+          try { localStorage.setItem(LAST_RESET_KEY, today); } catch (e) { /* ignore */ }
+        }
+      }
+
+      function scheduleNext1205() {
+        const now = new Date();
+
+        let next = new Date();
+        next.setHours(0, 5, 0, 0);
+
+        if (now >= next) {
+          next.setDate(next.getDate() + 1);
+        }
+
+        const delay = next - now;
+
+        setTimeout(() => {
+          checkDailyReset();
+          scheduleNext1205();
+        }, delay + 1000); // +1s so the clock is safely past 12:05:00
+      }
+
+      scheduleNext1205();
+
+      // Catch missed resets (sleep, throttled background tab, etc.)
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) checkDailyReset();
+      });
+      window.addEventListener('focus', checkDailyReset);
+      setInterval(checkDailyReset, 60000);
 
       startManagerAligned();
       startHourlyReminderService();
@@ -2588,9 +2581,9 @@ scheduleNext1205();
       syncTopIntentsFromWocas('X');
       syncTopIntentsFromWocas('FB');
 
-      // Ensure summary fields reflect any restored values
-      syncSummary('X');
-      syncSummary('FB');
+
+      // If the date changed while the page was closed, reset now
+      checkDailyReset();
     });
   </script>
 </body>
