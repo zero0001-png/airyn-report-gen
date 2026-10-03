@@ -961,6 +961,16 @@ textarea::placeholder {
         </div>
 
 	<style>
+	 /* Required-field highlight shown when Generate is clicked with missing data */
+	 input.field-missing,
+	 body.dark input.field-missing {
+	   border: 2px solid #dc2626 !important;
+	   background-color: rgba(220, 38, 38, 0.12) !important;
+	   box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.25) !important;
+	   outline: none !important;
+	 }
+	</style>
+	<style>
 	 #pendingX,
 	 #offTopicTotalX,
 	 #multipleMentionX,
@@ -1927,6 +1937,55 @@ return lines.join('\n');
       banner.textContent = '';
     }
 
+    // Required "TOTAL FOR ALL DAYS" fields (listed in on-screen order, top to bottom).
+    // Empty = no data. A typed 0 counts as data.
+    const REQUIRED_FIELDS = [
+      { id: 'offTopicTotalX',     label: 'Airyn X - Off-Topic (total for all days)' },
+      { id: 'approvedTotalX',     label: 'Airyn X - Approved (total for all days)' },
+      { id: 'offTopicTotalFB',    label: 'Airyn Facebook - Off-Topic (total for all days)' },
+      { id: 'approvedTotalFB',    label: 'Airyn Facebook - Agent Approved' },
+      { id: 'overallApprovedFB',  label: 'Airyn Facebook - Overall Approved' }
+    ];
+
+    function clearRequiredHighlights() {
+      REQUIRED_FIELDS.forEach(f => {
+        const el = document.getElementById(f.id);
+        if (el) el.classList.remove('field-missing');
+      });
+    }
+
+    // Returns true if all required fields have data. Otherwise highlights the
+    // empty ones in red, scrolls to the first one and returns false.
+    function validateRequiredFields() {
+      clearRequiredHighlights();
+      const missing = [];
+      REQUIRED_FIELDS.forEach(f => {
+        const el = document.getElementById(f.id);
+        if (el && el.value.trim() === '') {
+          el.classList.add('field-missing');
+          missing.push(f);
+        }
+      });
+      if (missing.length === 0) return true;
+
+      showValidationError('Missing data: ' + missing.map(m => m.label).join(', '));
+
+      const first = document.getElementById(missing[0].id);
+      first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      // preventScroll so focus() doesn't fight the smooth scroll
+      setTimeout(() => first.focus({ preventScroll: true }), 350);
+      return false;
+    }
+
+    // Remove the red highlight as soon as the user fills the field in
+    REQUIRED_FIELDS.forEach(f => {
+      const el = document.getElementById(f.id);
+      if (!el) return;
+      el.addEventListener('input', () => {
+        if (el.value.trim() !== '') el.classList.remove('field-missing');
+      });
+    });
+
     function validateNumeric(ids) {
       // Clear any previous bad-field highlighting
       ids.forEach(id => {
@@ -2047,6 +2106,9 @@ return lines.join('\n');
     // Single button: generate the combined Airyn X + Airyn Facebook report
     // (separated by a divider line) and copy it to the clipboard in one click.
     async function generateAllReports() {
+      // Required totals must have data before a report can be generated
+      if (!validateRequiredFields()) return;
+
       const numericIdsX = [
         'pendingX','offTopicTotalX','multipleMentionX','approvedTotalX',
         'offTopicDayX','failedSendX','approvedAgentX','autoSentX'
