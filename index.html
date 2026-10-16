@@ -371,6 +371,41 @@
     }
     #copyEscalationBtn:hover, #copyTemplateBtn:hover, #copyFindingsBtn:hover { background: var(--accent); }	  
 
+    /* ===== Modal button click effect (matches Generate button feedback) ===== */
+    .modal-box .btn {
+      position: relative;
+      overflow: hidden;
+      transition: background-color .18s ease, border-color .18s ease, color .18s ease,
+                  transform .12s cubic-bezier(0.2, 0, 0.2, 1), box-shadow .18s ease;
+    }
+    .modal-box .btn:active {
+      transform: scale(0.92);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25), inset 0 2px 6px rgba(0,0,0,0.25);
+    }
+    /* expanding ripple from the click point */
+    .modal-box .btn .btn-ripple {
+      position: absolute;
+      border-radius: 50%;
+      width: 10px; height: 10px;
+      margin: -5px 0 0 -5px;
+      background: rgba(255,255,255,0.55);
+      pointer-events: none;
+      transform: scale(0);
+      animation: modalBtnRipple .5s ease-out forwards;
+    }
+    @keyframes modalBtnRipple {
+      to { transform: scale(18); opacity: 0; }
+    }
+    /* brief flash when a modal action succeeds ("Copied ✓") */
+    .modal-box .btn.btn-done {
+      background: #1f9d55;
+      border-color: #1f9d55;
+      color: #fff;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .modal-box .btn, .modal-box .btn .btn-ripple { transition: none !important; animation: none !important; }
+    }
+
     /* ===== Findings / Callback template modal ===== */
     .modal-overlay {
       position: fixed; inset: 0; z-index: 1000;
@@ -384,7 +419,7 @@
     @keyframes modalFadeIn { from { opacity:0; } to { opacity:1; } }
 
     .modal-box {
-      width: 100%; max-width: 960px; max-height: 85vh;
+      width: 100%; max-width: 960px; max-height: 92vh;
       display: flex; flex-direction: column;
       margin: 0; overflow: visible;
       animation: modalPopIn .18s ease;
@@ -424,7 +459,7 @@
 
     .modal-textarea {
       width:100%; flex:1;
-      min-height: 320px;
+      min-height: min(500px, calc(92vh - 140px));
       resize: vertical;
       font-family: 'Segoe UI', Inter, Roboto, Arial, sans-serif;
       white-space: pre-wrap;
@@ -2167,6 +2202,49 @@ function updateReportBox(content) {
 }
 
 // ===== Findings / Callback popup modal =====
+// --- Persistence: modal text is saved per template and kept across reloads,
+// then reverts to the default at 12:30 AM, 6:30 AM, 12:30 PM and 6:30 PM (local time).
+const MODAL_RESET_TIMES = [30, 390, 750, 1110]; // minutes after midnight: 00:30, 06:30, 12:30, 18:30
+const MODAL_STORE_PREFIX = 'persist_modal_';
+let currentModalTitle = null;
+let currentModalDefault = '';
+
+// Identifies the current reset "slot" = the most recent reset time that has already passed.
+function getModalResetSlot(date) {
+    const now = date || new Date();
+    const mins = now.getHours() * 60 + now.getMinutes();
+    const slotDate = new Date(now);
+    slotDate.setSeconds(0, 0);
+    let boundary = null;
+    for (let i = MODAL_RESET_TIMES.length - 1; i >= 0; i--) {
+        if (mins >= MODAL_RESET_TIMES[i]) { boundary = MODAL_RESET_TIMES[i]; break; }
+    }
+    if (boundary === null) {            // before 12:30 AM -> still in yesterday's 6:30 PM slot
+        slotDate.setDate(slotDate.getDate() - 1);
+        boundary = MODAL_RESET_TIMES[MODAL_RESET_TIMES.length - 1];
+    }
+    slotDate.setHours(Math.floor(boundary / 60), boundary % 60, 0, 0);
+    return slotDate.getTime();
+}
+
+function loadSavedModalText(title) {
+    try {
+        const raw = localStorage.getItem(MODAL_STORE_PREFIX + title);
+        if (!raw) return null;
+        const data = JSON.parse(raw);
+        if (data && data.slot === getModalResetSlot() && typeof data.value === 'string') return data.value;
+        localStorage.removeItem(MODAL_STORE_PREFIX + title); // expired -> back to default
+    } catch (e) { /* ignore */ }
+    return null;
+}
+
+function saveModalText(title, value) {
+    if (!title) return;
+    try {
+        localStorage.setItem(MODAL_STORE_PREFIX + title, JSON.stringify({ slot: getModalResetSlot(), value: value }));
+    } catch (e) { /* ignore */ }
+}
+
 function openTemplateModal(title, content) {
     const overlay = document.getElementById('templateModalOverlay');
     const titleEl = document.getElementById('templateModalTitle');
@@ -2174,8 +2252,12 @@ function openTemplateModal(title, content) {
     const hint = document.getElementById('templateModalHint');
     if (!overlay || !titleEl || !textarea) return;
 
+    currentModalTitle = title;
+    currentModalDefault = content;
+    const saved = loadSavedModalText(title);
+
     titleEl.textContent = title;
-    textarea.value = content;
+    textarea.value = (saved !== null) ? saved : content;
     if (hint) hint.textContent = '';
     overlay.style.display = 'flex';
     setTimeout(() => textarea.focus(), 0);
@@ -2185,6 +2267,25 @@ function closeTemplateModal() {
     const overlay = document.getElementById('templateModalOverlay');
     if (overlay) overlay.style.display = 'none';
 }
+
+// Save whatever is typed in the modal
+document.getElementById('templateModalTextarea').addEventListener('input', function() {
+    saveModalText(currentModalTitle, this.value);
+});
+
+// When a reset time passes: wipe saved modal text, and if a modal is open, put the default back
+let lastModalSlot = getModalResetSlot();
+setInterval(function() {
+    const slot = getModalResetSlot();
+    if (slot === lastModalSlot) return;
+    lastModalSlot = slot;
+    ['Callback Template', 'Findings Template'].forEach(function(t) {
+        try { localStorage.removeItem(MODAL_STORE_PREFIX + t); } catch (e) { /* ignore */ }
+    });
+    const overlay = document.getElementById('templateModalOverlay');
+    const textarea = document.getElementById('templateModalTextarea');
+    if (overlay && overlay.style.display !== 'none' && textarea) textarea.value = currentModalDefault;
+}, 15000);
 
 document.getElementById('templateModalClose').addEventListener('click', closeTemplateModal);
 
@@ -2202,9 +2303,29 @@ document.addEventListener('keydown', function(e) {
 });
 
 
+// ===== Click ripple on modal buttons =====
+document.querySelectorAll('#templateModalOverlay .btn').forEach(function(btn) {
+    btn.addEventListener('pointerdown', function(e) {
+        const rect = btn.getBoundingClientRect();
+        const dot = document.createElement('span');
+        dot.className = 'btn-ripple';
+        dot.style.left = (e.clientX - rect.left) + 'px';
+        dot.style.top = (e.clientY - rect.top) + 'px';
+        btn.appendChild(dot);
+        setTimeout(function() { dot.remove(); }, 520);
+    });
+});
+
+
 document.getElementById('templateModalCopy').addEventListener('click', async function() {
     const textarea = document.getElementById('templateModalTextarea');
     const hint = document.getElementById('templateModalHint');
+    const copyBtn = this;
+    const prevLabel = copyBtn.dataset.label || copyBtn.textContent;
+    copyBtn.dataset.label = prevLabel;
+    copyBtn.textContent = 'Copied ✓';
+    copyBtn.classList.add('btn-done');
+    setTimeout(() => { copyBtn.textContent = prevLabel; copyBtn.classList.remove('btn-done'); }, 1200);
     try {
         await copyReportRich(textarea.value);
         if (hint) hint.textContent = 'Copied ✓';
@@ -2228,6 +2349,7 @@ Tel #:
 FT/SO #: 
 
 Summary: 
+
 
 Action Done: 
 1. Did we call back? 
@@ -2273,11 +2395,10 @@ __ cases created in Salesforce
 • Products and Promos - 
 • Service/Technical Issues - 
 • Threats - 
->> PLDTCares - All negative comments have a reply from our autoresponder (Airyn)
->> PLDTCares - Some post tagged as "limited who can comment on this post"
->> Reddit - New personas are banned due to similar IP/Device IDs with previously banned accounts.
 
-THREADS SCANNING - 0
+PLDTCares - All negative comments have a reply from our autoresponder (Airyn)
+PLDTCares - Some post tagged as "limited who can comment on this post"
+Reddit - New personas we're banned due to similar IP/Device IDs with previously banned accounts.
 
 SAMPLE WOCAS:
 - 
