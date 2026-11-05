@@ -2441,7 +2441,7 @@ Reason: `;
       }, 900);
     });
 
-// AUTO UPDATE TIME RANGE (managed interval between :10 and :59)
+// AUTO UPDATE TIME RANGE (previous hour's range until :15, then current hour's range)
     // ---------------------------
     let intervalId = null; // repeating worker id (90-second)
     let managerId = null;  // manager timer id
@@ -2450,26 +2450,26 @@ Reason: `;
       try {
         const now = new Date();
         const minutes = now.getMinutes();
-        
-        // Window check: Only run if between 10 and 59 minutes
-        if (minutes >= 10 && minutes <= 59) {
-          const startHour24 = now.getHours();
-          const endHour24 = (startHour24 + 1) % 24;
-          
-          function formatHour(h24) {
-            const suffix = h24 >= 12 ? 'PM' : 'AM';
-            let h12 = h24 % 12;
-            if (h12 === 0) h12 = 12;
-            return `${h12}:00 ${suffix}`;
-          }
-          
-          const range = `${formatHour(startHour24)} to ${formatHour(endHour24)}`;
-          const tx = document.getElementById('timeX');
-          const tfb = document.getElementById('timeFB');
 
-          if (tx) tx.value = range;
-          if (tfb) tfb.value = range;
+        // Before :15 -> keep showing the previous hour's range (e.g. at 12:05 PM: 11:00 AM to 12:00 PM)
+        // From :15 on -> show the current hour's range (e.g. at 12:15 PM: 12:00 PM to 1:00 PM)
+        const currentHour24 = now.getHours();
+        const startHour24 = minutes >= 15 ? currentHour24 : (currentHour24 + 23) % 24;
+        const endHour24 = (startHour24 + 1) % 24;
+
+        function formatHour(h24) {
+          const suffix = h24 >= 12 ? 'PM' : 'AM';
+          let h12 = h24 % 12;
+          if (h12 === 0) h12 = 12;
+          return `${h12}:00 ${suffix}`;
         }
+
+        const range = `${formatHour(startHour24)} to ${formatHour(endHour24)}`;
+        const tx = document.getElementById('timeX');
+        const tfb = document.getElementById('timeFB');
+
+        if (tx) tx.value = range;
+        if (tfb) tfb.value = range;
       } catch (err) {
         console.error('checkAndUpdateTimeRangesImmediate error', err);
       }
@@ -2479,17 +2479,20 @@ Reason: `;
       const now = new Date();
       const minutes = now.getMinutes();
 
-      // Start interval if we hit the :10 mark and it's not already running
-      if (minutes >= 10 && minutes <= 59 && intervalId === null) {
-        checkAndUpdateTimeRangesImmediate(); 
+      // Start interval if we hit the :15 mark and it's not already running
+      if (minutes >= 15 && minutes <= 59 && intervalId === null) {
+        checkAndUpdateTimeRangesImmediate();
         intervalId = setInterval(checkAndUpdateTimeRangesImmediate, 90000); // 90s
         return;
       }
 
-      // Stop interval if we are before the :10 mark (00:00 through 00:09)
-      if (minutes < 10 && intervalId !== null) {
-        clearInterval(intervalId);
-        intervalId = null;
+      // Before the :15 mark (00:00 through 00:14): stop the interval and show the previous hour's range
+      if (minutes < 15) {
+        if (intervalId !== null) {
+          clearInterval(intervalId);
+          intervalId = null;
+        }
+        checkAndUpdateTimeRangesImmediate();
       }
     }
 
